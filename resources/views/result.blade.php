@@ -97,7 +97,7 @@
       animation-delay: .35s;
     }
 
-    /* Hashtag sebagai gambar (ikuti halaman form) */
+    /* Hashtag sebagai gambar */
     .hashtag-wrap {
       margin-bottom: 40px;
       opacity:0;
@@ -231,6 +231,14 @@
       animation:none;
     }
 
+    .actions-row{
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      gap:16px;
+      margin-top:8px;
+    }
+
     /* LOADING OVERLAY */
     .loading-overlay{
       position:fixed;
@@ -271,6 +279,134 @@
       animation: spin 1s linear infinite;
     }
 
+    /* MODAL BAGIKAN HASIL */
+    .modal-backdrop{
+      position:fixed;
+      inset:0;
+      background:rgba(5,12,24,.42);
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      z-index:1000;
+      opacity:0;
+      visibility:hidden;
+      transition:opacity .22s ease-out, visibility .22s ease-out;
+    }
+
+    .modal-backdrop.is-open{
+      opacity:1;
+      visibility:visible;
+    }
+
+    .share-modal{
+      background:#ffffff;
+      border-radius:18px;
+      padding:22px 20px 18px;
+      width:min(88vw, 380px);
+      box-shadow:0 22px 60px rgba(10,27,52,.38);
+      transform:translateY(12px) scale(.96);
+      opacity:0;
+      transition:opacity .22s ease-out, transform .22s ease-out;
+    }
+
+    .modal-backdrop.is-open .share-modal{
+      opacity:1;
+      transform:translateY(0) scale(1);
+    }
+
+    .share-modal-title{
+      font-family:"caxton-lt-book", Georgia, "Times New Roman", serif;
+      font-size:1.3rem;
+      color:var(--brand-blue);
+      margin-bottom:4px;
+    }
+
+    .share-modal-sub{
+      font-size:.95rem;
+      color:var(--text-muted);
+      margin-bottom:16px;
+    }
+
+    .share-modal-options{
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+      margin-top:4px;
+      margin-bottom:8px;
+    }
+
+    .share-option{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:8px;
+      padding:12px 14px;
+      border-radius:12px;
+      background:#F5FAFF;
+      border:1px solid #e0ecf8;
+      cursor:pointer;
+      transition:
+        background-color .16s ease-out,
+        border-color .16s ease-out,
+        transform .12s ease-out,
+        box-shadow .16s ease-out;
+    }
+
+    .share-option-label{
+      text-align:left;
+    }
+
+    .share-option-label strong{
+      display:block;
+      font-size:.98rem;
+      color:var(--brand-blue);
+    }
+
+    .share-option-label span{
+      display:block;
+      font-size:.86rem;
+      color:var(--text-muted);
+    }
+
+    .share-option:hover{
+      background:var(--light-blue);
+      border-color:#cfdff2;
+      transform:translateY(-1px);
+      box-shadow:0 10px 26px rgba(15,35,64,.18);
+    }
+
+    .share-option:active{
+      transform:translateY(0);
+      box-shadow:none;
+    }
+
+    .share-option-icon{
+      width:32px;
+      height:32px;
+      border-radius:999px;
+      background:var(--brand-blue);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      color:#fff;
+      font-size:.9rem;
+      box-shadow:0 8px 18px rgba(59,132,173,.5);
+    }
+
+    .share-modal-footer{
+      margin-top:8px;
+      text-align:right;
+    }
+
+    .modal-close-btn{
+      background:transparent;
+      border:none;
+      color:var(--text-muted);
+      font-size:.9rem;
+      cursor:pointer;
+      padding:6px 10px;
+    }
+
     @keyframes spin{ to{ transform:rotate(360deg); } }
     @keyframes greetIn{ to{ opacity:1; transform:translateY(0); } }
     @keyframes phaseBoxIn{
@@ -303,6 +439,8 @@
       .phase-title { font-size: 2.2rem; }
       .special-box { flex-direction: column; align-items: center; text-align: center; }
       .special-text { text-align: center; }
+      .actions-row { flex-direction:column; }
+      .share-modal{ width: min(92vw, 380px); }
     }
   </style>
 </head>
@@ -313,6 +451,36 @@
     <div class="loader-ring"></div>
     <div class="loading-text">Sedang merangkai patah hati kamu...</div>
     <div class="loading-sub">Tunggu sebentar, kami lagi baca isi hati kamu 💬</div>
+  </div>
+
+  <!-- Modal Bagikan Hasil -->
+  <div class="modal-backdrop" id="shareModal">
+    <div class="share-modal">
+      <div class="share-modal-title">Bagikan hasil kamu</div>
+      <div class="share-modal-sub">Pilih format yang mau kamu bagikan ke teman-teman.</div>
+
+      <div class="share-modal-options">
+        <button type="button" class="share-option" data-share="poster">
+          <div class="share-option-label">
+            <strong>Bagikan Poster</strong>
+          </div>
+          <div class="share-option-icon">🖼</div>
+        </button>
+
+        <button type="button" class="share-option" data-share="video">
+          <div class="share-option-label">
+            <strong>Bagikan Video</strong>
+          </div>
+          <div class="share-option-icon">🎬</div>
+        </button>
+      </div>
+
+      <div class="share-modal-footer">
+        <button type="button" class="modal-close-btn" id="shareModalClose">
+          Tutup
+        </button>
+      </div>
+    </div>
   </div>
 
   <div class="result-container" id="resultContainer">
@@ -330,7 +498,7 @@
       {!! nl2br(e($desc)) !!}
     </div>
 
-    {{-- Hashtag sebagai gambar (konsisten dengan form & index) --}}
+    {{-- Hashtag sebagai gambar --}}
     <div class="hashtag-wrap">
       <img 
         src="{{ asset('img/hashtag.png') }}" 
@@ -349,9 +517,12 @@
     </div>
 
     {{-- Buttons --}}
-    <div>
+    <div class="actions-row">
       <a href="{{ route('home') }}" class="btn">Ulang Tes</a>
-      <a href="#" class="btn">Bagikan Hasil</a>
+
+      <button type="button" class="btn" id="shareOpenBtn">
+        Bagikan Hasil
+      </button>
     </div>
   </div>
 
@@ -367,6 +538,63 @@
         result.classList.add('is-visible');
       }, LOADING_DURATION);
     });
+
+    // Modal Bagikan Hasil
+    (function(){
+      const modal      = document.getElementById('shareModal');
+      const openBtn    = document.getElementById('shareOpenBtn');
+      const closeBtn   = document.getElementById('shareModalClose');
+
+      if(!modal || !openBtn || !closeBtn) return;
+
+      function openModal(){
+        modal.classList.add('is-open');
+      }
+
+      function closeModal(){
+        modal.classList.remove('is-open');
+      }
+
+      openBtn.addEventListener('click', function(){
+        openModal();
+      });
+
+      closeBtn.addEventListener('click', function(){
+        closeModal();
+      });
+
+      // klik di area gelap menutup modal
+      modal.addEventListener('click', function(e){
+        if(e.target === modal){
+          closeModal();
+        }
+      });
+
+      // ESC untuk menutup
+      document.addEventListener('keydown', function(e){
+        if(e.key === 'Escape'){
+          closeModal();
+        }
+      });
+
+      // Aksi pilihan share
+      modal.querySelectorAll('.share-option').forEach(function(opt){
+        opt.addEventListener('click', function(){
+          const type = this.getAttribute('data-share');
+
+          if(type === 'poster'){
+            console.log('Bagikan Poster');
+            // TODO: panggil logika share poster di sini
+          }
+          if(type === 'video'){
+            console.log('Bagikan Video');
+            // TODO: panggil logika share video di sini
+          }
+
+          closeModal();
+        });
+      });
+    })();
   </script>
 </body>
 </html>
