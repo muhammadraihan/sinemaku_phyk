@@ -317,21 +317,17 @@
 
   <div class="result-container" id="resultContainer">
     {{-- Greeting --}}
-    <h2 class="greeting">Hai, {{ $name ?? 'Lorem Ipsum' }}</h2>
+    <h2 class="greeting">Hai, {{ ucfirst($name) }}</h2>
 
     {{-- Phase box --}}
     <div class="phase-box">
       <div class="phase-subtitle">Kamu sedang ada di fase</div>
-      <div class="phase-title">{{ strtoupper($phase ?? 'DENIAL') }}</div>
+      <div class="phase-title">{{ strtoupper($dominant) }}</div>
     </div>
 
     {{-- Description --}}
     <div class="phase-desc">
-      {!! nl2br(e($description ?? "Kamu mungkin masih berharap semuanya bisa kembali seperti dulu. Rasanya sulit menerima kenyataan, seolah apa yang terjadi hanyalah mimpi buruk yang segera berlalu.
-
-Tapi ingat, menolak bukan berarti lemah — ini cara hati melindungi diri sebelum siap untuk benar-benar melepaskan.
-
-Pelan-pelan saja. Penerimaan akan datang ketika kamu siap menemuiya.")) !!}
+      {!! nl2br(e($desc)) !!}
     </div>
 
     {{-- Hashtag sebagai gambar (konsisten dengan form & index) --}}
@@ -354,7 +350,7 @@ Pelan-pelan saja. Penerimaan akan datang ketika kamu siap menemuiya.")) !!}
 
     {{-- Buttons --}}
     <div>
-      <a href="{{ route('quiz.start') }}" class="btn">Ulang Tes</a>
+      <a href="{{ route('home') }}" class="btn">Ulang Tes</a>
       <a href="#" class="btn">Bagikan Hasil</a>
     </div>
   </div>
