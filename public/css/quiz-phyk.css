@@ -1,10 +1,22 @@
 /* Reset ringkas */
 * { box-sizing: border-box; margin: 0; padding: 0; }
 html, body { height: 100%; }
+
+@font-face {
+  font-family: 'caxton-lt-book';
+  src: url('/fonts/caxton-lt-book.woff2') format('woff2'),
+       url('/fonts/caxton-lt-book.woff')  format('woff');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
 body {
   font-family:"caxton-lt-book", Georgia, "Times New Roman", serif;
   background: #ffffff;
   color: #1b2430;
+  opacity:0;
+  animation: quizPageFadeIn 0.7s ease-out forwards;
 }
 
 /* Container utama */
@@ -12,6 +24,9 @@ body {
   max-width: 980px;
   padding: 24px 20px 56px;
   margin: 0 auto;
+  opacity:0;
+  transform:translateY(10px);
+  animation: quizWrapIn 0.7s cubic-bezier(.16,.8,.25,1) 0.08s forwards;
 }
 
 /* Header: progress + logo kanan */
@@ -22,6 +37,9 @@ body {
   align-items: center;
   gap: 16px;
   margin-bottom: 28px;
+  opacity:0;
+  transform:translateY(6px);
+  animation: quizHeadIn 0.65s ease-out 0.15s forwards;
 }
 
 /* progress text di atas rail (tengah kiri) */
@@ -40,19 +58,43 @@ body {
   background: #e9eef5;
   border-radius: 10px;
   overflow: hidden;
+  position:relative;
 }
+
+/* sedikit highlight berjalan di belakang fill (opsional subtle) */
+.progress-rail::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:linear-gradient(
+    120deg,
+    rgba(255,255,255,0) 0%,
+    rgba(255,255,255,0.5) 35%,
+    rgba(255,255,255,0) 70%
+  );
+  opacity:0;
+  transform:translateX(-60%);
+  animation: progressShine 2.2s ease-in-out 0.6s infinite;
+}
+
+/* batang progress */
 .progress-fill {
   height: 100%;
   width: 0%;
   background: #F1E36B; /* kuning lembut sesuai desain */
   border-radius: 10px;
-  transition: width .3s ease;
+  transition: width .35s cubic-bezier(.22,.8,.25,1);
 }
 
+/* logo kanan */
 .brand-top {
   grid-column: 2 / 3;
   width: 140px;
   height: auto;
+  opacity:0;
+  transform:translateY(6px) scale(1.02);
+  filter:drop-shadow(0 8px 20px rgba(0,0,0,.08));
+  animation: brandTopIn 0.7s ease-out 0.2s forwards;
 }
 
 /* Kartu pertanyaan */
@@ -65,18 +107,24 @@ body {
 .question-card {
   width: min(100%, 760px);
   background: #E9F5FF;              /* biru muda */
-  border-radius: 24px;               /* sudut besar */
+  border-radius: 24px;              /* sudut besar */
   padding: clamp(20px, 3.5vw, 40px);
   box-shadow: 0 10px 26px rgba(17, 36, 66, .06);
-  animation: fadeIn .4s ease-out;
+  animation: questionEnter 0.45s cubic-bezier(.16,.8,.25,1);
+  transform-origin: center top;
+}
+
+/* bila kamu pakai class .question-card.leave di JS, ini untuk animasi keluar */
+.question-card.leave {
+  animation: questionLeave 0.35s ease-in forwards;
 }
 
 .q-title {
-  font-family: "Playfair Display", Georgia, serif;
+  font-family: "Roboto", Georgia, serif;
   font-weight: 700;
   color: #3B84AD;
   text-align: center;
-  font-size: clamp(22px, 2.2vw, 36px);
+  font-size: clamp(18px, 2vw, 30px);
   line-height: 1.3;
   margin-bottom: clamp(18px, 2.2vw, 30px);
 }
@@ -109,27 +157,105 @@ body {
   text-align: left;
   width: 100%;
   background: #ffffff;
-  color: #3A4A5E;
+  color: #3B84AD;
   border: 2px solid #ffffff;
   border-radius: 12px;
   padding: clamp(12px, 1.2vw, 16px) clamp(14px, 1.6vw, 18px);
   font-weight: 600;
-  transition: all .2s ease;
+  transition:
+    transform .16s ease-out,
+    box-shadow .18s ease-out,
+    border-color .18s ease-out,
+    background-color .18s ease-out,
+    color .18s ease-out;
   box-shadow: 0 6px 16px rgba(17, 36, 66, .06);
   cursor: pointer;
+  position:relative;
+  overflow:hidden;
 }
+
+/* hover: sedikit lift + shadow */
 .opt-btn:hover {
   transform: translateY(-2px);
   box-shadow: 0 10px 22px rgba(17, 36, 66, .10);
   border-color: #DDEAF7;
 }
 
+/* state selected (tambahkan class ini via JS) */
+.opt-btn.selected {
+  background:#3B84AD;
+  color:#ffffff;
+  border-color:#3B84AD;
+  box-shadow:0 12px 26px rgba(17,36,66,.18);
+  transform:translateY(-1px);
+}
+
+/* efek ripple lembut saat klik (opsional, pakai data-attr/JS jika mau) */
+.opt-btn:active {
+  transform:translateY(0);
+  box-shadow:0 5px 12px rgba(17,36,66,.12);
+}
+
 /* hashtag bawah */
 .hashtag-wrap { margin-top: 28px; }
 .hashtag-img { width: min(48vw, 240px); height: auto; }
 
-/* Animasi */
-@keyframes fadeIn { from{opacity:0; transform:translateY(8px)} to{opacity:1; transform:none} }
+/* Animasi keyframes */
+@keyframes quizPageFadeIn{
+  from{ opacity:0; }
+  to{ opacity:1; }
+}
+
+@keyframes quizWrapIn{
+  from{ opacity:0; transform:translateY(10px); }
+  to{ opacity:1; transform:translateY(0); }
+}
+
+@keyframes quizHeadIn{
+  from{ opacity:0; transform:translateY(6px); }
+  to{ opacity:1; transform:translateY(0); }
+}
+
+@keyframes brandTopIn{
+  from{ opacity:0; transform:translateY(6px) scale(1.02); }
+  to{ opacity:1; transform:translateY(0) scale(1); }
+}
+
+@keyframes questionEnter{
+  0%{
+    opacity:0;
+    transform:translateY(14px) scale(0.98);
+  }
+  100%{
+    opacity:1;
+    transform:translateY(0) scale(1);
+  }
+}
+
+@keyframes questionLeave{
+  0%{
+    opacity:1;
+    transform:translateY(0) scale(1);
+  }
+  100%{
+    opacity:0;
+    transform:translateY(-10px) scale(0.98);
+  }
+}
+
+@keyframes progressShine{
+  0%{
+    opacity:0;
+    transform:translateX(-60%);
+  }
+  20%{
+    opacity:1;
+  }
+  100%{
+    opacity:0;
+    transform:translateX(60%);
+  }
+}
 
 /* Responsif kecil */
 @media (max-width: 600px){
