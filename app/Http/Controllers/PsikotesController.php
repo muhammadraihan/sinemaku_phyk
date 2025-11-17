@@ -422,7 +422,7 @@ Terima kasih sudah bertahan sejauh ini. Langkah berikutnya milikmu sepenuhnya.',
             ]);
             // Jangan hapus overlay dulu kalau mau cek manual masalahnya
             // @unlink($overlayPng);
-            abort(500, "Gagal membuat video. Lihat log untuk detail.");
+            abort(500, "Gagal membuat video. " . $proc->getErrorOutput());
         }
 
         // Cleanup overlay sementara
