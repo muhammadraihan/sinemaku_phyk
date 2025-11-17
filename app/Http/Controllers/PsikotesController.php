@@ -386,15 +386,15 @@ Terima kasih sudah bertahan sejauh ini. Langkah berikutnya milikmu sepenuhnya.',
         // --- FILTER: posisi & delay 5 detik -------------------------------------
         // Catatan: Process TIDAK via shell, jadi string ini dikirim utuh ke ffmpeg.
        $filter = implode(';', [
-            // pastikan kedua input jadi RGBA dulu (aman untuk overlay alpha)
             '[0:v]format=rgba[base]',
             '[1:v]format=rgba[ov]',
-            // paksa x,y integer pakai floor(), lalu akhirkan dengan yuv420p
+            // overlay seperti biasa
             "[base][ov]overlay="
-            ."x='floor((main_w-overlay_w)/2+100)'"   // integer x
-            .":y='floor(main_h*0.78)'"               // integer y
-            .":enable='gte(t,5)'"
-            .",format=yuv420p[vout]"
+            ."x='floor((main_w-overlay_w)/2+100)'"
+            .":y='floor(main_h*0.78)'"
+            .":enable='gte(t,5)'[tmp]",
+            // paksa kelipatan 2
+            "[tmp]scale=trunc(iw/2)*2:trunc(ih/2)*2,format=yuv420p[vout]"
         ]);
 
         // --- PATH ABSOLUT FFMPEG -------------------------------------------------
