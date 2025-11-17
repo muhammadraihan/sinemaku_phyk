@@ -385,7 +385,17 @@ Terima kasih sudah bertahan sejauh ini. Langkah berikutnya milikmu sepenuhnya.',
 
         // --- FILTER: posisi & delay 5 detik -------------------------------------
         // Catatan: Process TIDAK via shell, jadi string ini dikirim utuh ke ffmpeg.
-        $filter = "[0:v][1:v]overlay=x=(main_w-overlay_w)/2+100:y=main_h*0.78:enable='gte(t,5)'[vout]";
+       $filter = implode(';', [
+            // pastikan kedua input jadi RGBA dulu (aman untuk overlay alpha)
+            '[0:v]format=rgba[base]',
+            '[1:v]format=rgba[ov]',
+            // paksa x,y integer pakai floor(), lalu akhirkan dengan yuv420p
+            "[base][ov]overlay="
+            ."x='floor((main_w-overlay_w)/2+100)'"   // integer x
+            .":y='floor(main_h*0.78)'"               // integer y
+            .":enable='gte(t,5)'"
+            .",format=yuv420p[vout]"
+        ]);
 
         // --- PATH ABSOLUT FFMPEG -------------------------------------------------
         $ffmpeg = env('FFMPEG_PATH', '/home/u882139623/bin/ffmpeg');
@@ -399,10 +409,14 @@ Terima kasih sudah bertahan sejauh ini. Langkah berikutnya milikmu sepenuhnya.',
             '-i', $template,
             '-i', $overlayPng,
             '-filter_complex', $filter,
-            '-map', '[vout]', '-map', '0:a?',   // audio optional
-            '-c:v', 'libx264',
-            '-pix_fmt', 'yuv420p',
-            '-c:a', 'copy',                     // coba copy dulu (cepat)
+            '-map', '[vout]', '-map', '0:a?',      // pakai video hasil filter + audio asal jika ada
+            '-c:v', 'libx264', '-preset', 'veryfast', '-crf', '23',
+            '-r', '30',                            // paksa fps stabil
+            // jangan copy audio; encode aac biar kompatibel
+            '-c:a', 'aac', '-b:a', '128k',
+            '-movflags', '+faststart',             // cepat mulai saat streaming
+            '-shortest',                           // akhiri mengikuti durasi terpendek
+            '-pix_fmt', 'yuv420p',                 // jaga kompatibilitas
             $output,
         ];
 
