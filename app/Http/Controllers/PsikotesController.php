@@ -362,19 +362,16 @@ Terima kasih sudah bertahan sejauh ini. Langkah berikutnya milikmu sepenuhnya.',
 
     public function video(Request $request)
     {
-        $name = $request->input('name', session('quiz_name', 'Kamu'));
+        $name  = $request->input('name', session('quiz_name', 'Kamu'));
         $phase = strtolower($request->phase);
 
         // --- PATHS ---------------------------------------------------------------
         $publicPathPart = parse_url($request->video, PHP_URL_PATH);
-        // dd($publicPathPart);
         $template = public_path($publicPathPart);
-        // $dir = public_path("video/{$phase}");
-        // $files = glob($dir.'/*.{mp4,mov,m4v,webm,mkv}', GLOB_BRACE);
-        // abort_if(empty($files), 404, "Tidak ada file video valid di folder: {$dir}");
-        // $template = $files[random_int(0, count($files)-1)];
-        $overlayPng = $this->makeOverlayBadge($name);            // pastikan fungsi ini return ABSOLUTE path PNG
-        $outDir = public_path('tmp');
+
+        $overlayPng = $this->makeOverlayBadge($name);   // wajib return ABSOLUTE path
+        $outDir     = public_path('tmp');
+
         if (!is_dir($outDir)) mkdir($outDir, 0775, true);
         if (!is_writable($outDir)) {
             abort(500, "Folder output tidak writable: {$outDir}");
@@ -383,45 +380,66 @@ Terima kasih sudah bertahan sejauh ini. Langkah berikutnya milikmu sepenuhnya.',
         $output = $outDir . '/share_' . Str::random(8) . '.mp4';
 
         // Validasi input
-        if (!file_exists($template)) {
-            abort(404, "Template video tidak ditemukan: {$template}");
-        }
-        if (!file_exists($overlayPng)) {
-            abort(500, "Overlay PNG tidak ditemukan: {$overlayPng}");
-        }
+        abort_if(!file_exists($template), 404, "Template video tidak ditemukan: {$template}");
+        abort_if(!file_exists($overlayPng), 500, "Overlay PNG tidak ditemukan: {$overlayPng}");
 
         // --- FILTER: posisi & delay 5 detik -------------------------------------
+        // Catatan: Process TIDAK via shell, jadi string ini dikirim utuh ke ffmpeg.
         $filter = "[0:v][1:v]overlay=x=(main_w-overlay_w)/2+100:y=main_h*0.78:enable='gte(t,5)'[vout]";
 
-        // --- JALANKAN FFMPEG -----------------------------------------------------
+        // --- PATH ABSOLUT FFMPEG -------------------------------------------------
+        $ffmpeg = env('FFMPEG_PATH', '/home/u882139623/bin/ffmpeg');
+        if (!is_executable($ffmpeg)) {
+            abort(500, "FFmpeg tidak dapat dieksekusi: {$ffmpeg}");
+        }
+
+        // --- CMD UTAMA -----------------------------------------------------------
         $cmd = [
-            'ffmpeg','-y',
+            $ffmpeg, '-y',
             '-i', $template,
             '-i', $overlayPng,
             '-filter_complex', $filter,
             '-map', '[vout]', '-map', '0:a?',   // audio optional
-            '-c:v', 'libx264',                  // pastikan ada encoder video
-            '-pix_fmt', 'yuv420p',              // kompatibel player
-            '-c:a', 'copy',                     // audio langsung copy (cepat)
+            '-c:v', 'libx264',
+            '-pix_fmt', 'yuv420p',
+            '-c:a', 'copy',                     // coba copy dulu (cepat)
             $output,
         ];
 
+        // --- RUN -----------------------------------------------------------------
         $proc = new Process($cmd);
-        // Jika ffmpeg tidak ada di PATH, set env PATH atau pakai absolute path ffmpeg, mis:
-        // $proc = new Process(['/usr/bin/ffmpeg', ...]);
-        $proc->setTimeout(300);
+        $proc->setTimeout(300); // 5 menit
         $proc->run();
+
+        // --- Fallback audio: kalau copy gagal (mis. input tidak cocok) ----------
+        if ((!$proc->isSuccessful() || !file_exists($output)) && str_contains($proc->getErrorOutput(), 'Output file is empty')) {
+            // Ulangi encode audio ke AAC
+            @unlink($output);
+            $cmdFallback = [
+                $ffmpeg, '-y',
+                '-i', $template,
+                '-i', $overlayPng,
+                '-filter_complex', $filter,
+                '-map', '[vout]', '-map', '0:a?',
+                '-c:v', 'libx264',
+                '-pix_fmt', 'yuv420p',
+                '-c:a', 'aac', '-b:a', '128k',
+                $output,
+            ];
+            $proc = new Process($cmdFallback);
+            $proc->setTimeout(300);
+            $proc->run();
+        }
 
         // --- DIAGNOSA ------------------------------------------------------------
         if (!$proc->isSuccessful() || !file_exists($output)) {
             \Log::error('FFmpeg failed', [
-                'cmd'   => implode(' ', $cmd),
+                'cmd'   => implode(' ', array_map(fn($a) => (str_contains($a, ' ') ? "\"$a\"" : $a), $cmd)),
                 'out'   => $proc->getOutput(),
                 'err'   => $proc->getErrorOutput(),
                 'exists'=> file_exists($output) ? 'yes' : 'no',
             ]);
-            // Jangan hapus overlay dulu kalau mau cek manual masalahnya
-            // @unlink($overlayPng);
+            // @unlink($overlayPng); // simpan sementara buat investigasi
             abort(500, "Gagal membuat video. " . $proc->getErrorOutput());
         }
 
@@ -431,4 +449,76 @@ Terima kasih sudah bertahan sejauh ini. Langkah berikutnya milikmu sepenuhnya.',
         // --- KIRIM FILE ----------------------------------------------------------
         return response()->download($output, 'hasil-kamu.mp4')->deleteFileAfterSend(true);
     }
+
+    // public function video(Request $request)
+    // {
+    //     $name = $request->input('name', session('quiz_name', 'Kamu'));
+    //     $phase = strtolower($request->phase);
+
+    //     // --- PATHS ---------------------------------------------------------------
+    //     $publicPathPart = parse_url($request->video, PHP_URL_PATH);
+    //     // dd($publicPathPart);
+    //     $template = public_path($publicPathPart);
+    //     // $dir = public_path("video/{$phase}");
+    //     // $files = glob($dir.'/*.{mp4,mov,m4v,webm,mkv}', GLOB_BRACE);
+    //     // abort_if(empty($files), 404, "Tidak ada file video valid di folder: {$dir}");
+    //     // $template = $files[random_int(0, count($files)-1)];
+    //     $overlayPng = $this->makeOverlayBadge($name);            // pastikan fungsi ini return ABSOLUTE path PNG
+    //     $outDir = public_path('tmp');
+    //     if (!is_dir($outDir)) mkdir($outDir, 0775, true);
+    //     if (!is_writable($outDir)) {
+    //         abort(500, "Folder output tidak writable: {$outDir}");
+    //     }
+
+    //     $output = $outDir . '/share_' . Str::random(8) . '.mp4';
+
+    //     // Validasi input
+    //     if (!file_exists($template)) {
+    //         abort(404, "Template video tidak ditemukan: {$template}");
+    //     }
+    //     if (!file_exists($overlayPng)) {
+    //         abort(500, "Overlay PNG tidak ditemukan: {$overlayPng}");
+    //     }
+
+    //     // --- FILTER: posisi & delay 5 detik -------------------------------------
+    //     $filter = "[0:v][1:v]overlay=x=(main_w-overlay_w)/2+100:y=main_h*0.78:enable='gte(t,5)'[vout]";
+
+    //     // --- JALANKAN FFMPEG -----------------------------------------------------
+    //     $cmd = [
+    //         'ffmpeg','-y',
+    //         '-i', $template,
+    //         '-i', $overlayPng,
+    //         '-filter_complex', $filter,
+    //         '-map', '[vout]', '-map', '0:a?',   // audio optional
+    //         '-c:v', 'libx264',                  // pastikan ada encoder video
+    //         '-pix_fmt', 'yuv420p',              // kompatibel player
+    //         '-c:a', 'copy',                     // audio langsung copy (cepat)
+    //         $output,
+    //     ];
+
+    //     $proc = new Process($cmd);
+    //     // Jika ffmpeg tidak ada di PATH, set env PATH atau pakai absolute path ffmpeg, mis:
+    //     // $proc = new Process(['/usr/bin/ffmpeg', ...]);
+    //     $proc->setTimeout(300);
+    //     $proc->run();
+
+    //     // --- DIAGNOSA ------------------------------------------------------------
+    //     if (!$proc->isSuccessful() || !file_exists($output)) {
+    //         \Log::error('FFmpeg failed', [
+    //             'cmd'   => implode(' ', $cmd),
+    //             'out'   => $proc->getOutput(),
+    //             'err'   => $proc->getErrorOutput(),
+    //             'exists'=> file_exists($output) ? 'yes' : 'no',
+    //         ]);
+    //         // Jangan hapus overlay dulu kalau mau cek manual masalahnya
+    //         // @unlink($overlayPng);
+    //         abort(500, "Gagal membuat video. " . $proc->getErrorOutput());
+    //     }
+
+    //     // Cleanup overlay sementara
+    //     @unlink($overlayPng);
+
+    //     // --- KIRIM FILE ----------------------------------------------------------
+    //     return response()->download($output, 'hasil-kamu.mp4')->deleteFileAfterSend(true);
+    // }
 }
