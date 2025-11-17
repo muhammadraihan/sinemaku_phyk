@@ -18,14 +18,16 @@
       --muted:#3B84AD;         /* paragraf */
       --card-border:#99c8ef;   /* outline foto */
     }
+
     @font-face {
-  font-family: 'caxton-lt-book';
-  src: url('/fonts/caxton-lt-book.woff2') format('woff2'),
-       url('/fonts/caxton-lt-book.woff')  format('woff');
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
+      font-family: 'caxton-lt-book';
+      src: url('/fonts/caxton-lt-book.woff2') format('woff2'),
+           url('/fonts/caxton-lt-book.woff')  format('woff');
+      font-weight: 400;
+      font-style: normal;
+      font-display: swap;
+    }
+
     body{
       background:#fff;
       font-family: Roboto, system-ui, -apple-system, "Segoe UI", "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
@@ -164,90 +166,63 @@
     }
 
     .btn-primary{
-  background:#3B84AD;
-  border-color:#3B84AD;
-  padding:.775rem 1.6rem;
-  font-weight:600;
-  border-radius:10px;
-  position:relative;
-  overflow:hidden;
-  box-shadow:0 12px 26px rgba(59,132,173,.28);
-  transform:translateY(0) scale(1);
-  transition:
-    transform 0.22s ease-out,
-    box-shadow 0.22s ease-out,
-    background-color 0.22s ease-out,
-    border-color 0.22s ease-out;
-  animation: ctaPulse 2.8s ease-in-out 1.2s infinite;
-}
+      background:#3B84AD;
+      border-color:#3B84AD;
+      padding:.775rem 1.6rem;
+      font-weight:600;
+      border-radius:10px;
+      position:relative;
+      overflow:hidden;
+      box-shadow:0 12px 26px rgba(59,132,173,.28);
+      transform:translateY(0) scale(1);
+      transition:
+        transform 0.22s ease-out,
+        box-shadow 0.22s ease-out,
+        background-color 0.22s ease-out,
+        border-color 0.22s ease-out;
+      animation: ctaPulse 2.8s ease-in-out 1.2s infinite;
+    }
 
-/* pseudo-element lebih lebar dari tombol, jalan penuh kiri -> kanan */
-.btn-primary::before{
-  content:"";
-  position:absolute;
-  top:0;
-  left:-60%;
-  width:220%;
-  height:100%;
-  background: linear-gradient(
-    120deg,
-    rgba(255,255,255,0) 0%,
-    rgba(255,255,255,0.35) 45%,
-    rgba(255,255,255,0.0) 100%
-  );
-  opacity:0;
-  transform:translateX(0);
-  transition:opacity .3s ease-out;
-  pointer-events:none;
-}
+    /* pseudo-element lebih lebar dari tombol, jalan penuh kiri -> kanan */
+    .btn-primary::before{
+      content:"";
+      position:absolute;
+      top:0;
+      left:-60%;
+      width:220%;
+      height:100%;
+      background: linear-gradient(
+        120deg,
+        rgba(255,255,255,0) 0%,
+        rgba(255,255,255,0.35) 45%,
+        rgba(255,255,255,0.0) 100%
+      );
+      opacity:0;
+      transform:translateX(0);
+      transition:opacity .3s ease-out;
+      pointer-events:none;
+    }
 
-.btn-primary:hover{
-  background:#78bde4;
-  border-color:#78bde4;
-  transform:translateY(-1px) scale(1.02);
-  box-shadow:0 16px 34px rgba(59,132,173,.45);
-}
+    .btn-primary:hover{
+      background:#78bde4;
+      border-color:#78bde4;
+      transform:translateY(-1px) scale(1.02);
+      box-shadow:0 16px 34px rgba(59,132,173,.45);
+    }
 
-/* saat hover, shine aktif dan bergerak penuh */
-.btn-primary:hover::before{
-  opacity:1;
-  animation: btnShine 0.9s ease-out forwards;
-}
+    /* saat hover, shine aktif dan bergerak penuh */
+    .btn-primary:hover::before{
+      opacity:1;
+      animation: btnShine 0.9s ease-out forwards;
+    }
 
-.btn-primary:active{
-  transform:translateY(1px) scale(.99);
-  box-shadow:0 8px 18px rgba(59,132,173,.35);
-  animation:none;
-}
+    .btn-primary:active{
+      transform:translateY(1px) scale(.99);
+      box-shadow:0 8px 18px rgba(59,132,173,.35);
+      animation:none;
+    }
 
-/* napas (pulse) skala & shadow tombol */
-@keyframes ctaPulse{
-  0%,100%{
-    transform:translateY(0) scale(1);
-    box-shadow:0 12px 26px rgba(59,132,173,.28);
-  }
-  50%{
-    transform:translateY(-1px) scale(1.015);
-    box-shadow:0 18px 40px rgba(59,132,173,.40);
-  }
-}
-
-/* animasi shine menyapu dari kiri ke kanan penuh */
-@keyframes btnShine{
-  0%{
-    transform:translateX(0);
-    opacity:0;
-  }
-  10%{
-    opacity:1;
-  }
-  100%{
-    transform:translateX(60%);
-    opacity:0;
-  }
-}
-
-
+    /* napas (pulse) skala & shadow tombol */
     @keyframes ctaPulse{
       0%,100%{
         transform:translateY(0) scale(1);
@@ -256,6 +231,21 @@
       50%{
         transform:translateY(-1px) scale(1.015);
         box-shadow:0 18px 40px rgba(59,132,173,.40);
+      }
+    }
+
+    /* animasi shine menyapu dari kiri ke kanan penuh */
+    @keyframes btnShine{
+      0%{
+        transform:translateX(0);
+        opacity:0;
+      }
+      10%{
+        opacity:1;
+      }
+      100%{
+        transform:translateX(60%);
+        opacity:0;
       }
     }
 
@@ -290,7 +280,7 @@
       height: auto;
       opacity:0;
       transform:translateY(6px);
-      animation: hashtagIn 0.8s ease-out 0.9s forwards;
+      animation: hashtagIn 0.5s ease-out 0.5s forwards;
     }
 
     @keyframes hashtagIn{

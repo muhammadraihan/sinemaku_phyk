@@ -299,15 +299,16 @@
     }
 
     .share-modal{
-      background:#ffffff;
-      border-radius:18px;
-      padding:22px 20px 18px;
-      width:min(88vw, 380px);
-      box-shadow:0 22px 60px rgba(10,27,52,.38);
-      transform:translateY(12px) scale(.96);
-      opacity:0;
-      transition:opacity .22s ease-out, transform .22s ease-out;
-    }
+  background:#ffffff;
+  border-radius:18px;
+  padding:22px 20px 18px;
+  width:min(92vw, 380px);
+  box-shadow:0 22px 60px rgba(10,27,52,.38);
+  transform:translateY(12px) scale(.96);
+  opacity:0;
+  transition:opacity .22s ease-out, transform .22s ease-out;
+}
+
 
     .modal-backdrop.is-open .share-modal{
       opacity:1;
@@ -442,6 +443,14 @@
       .actions-row { flex-direction:column; }
       .share-modal{ width: min(92vw, 380px); }
     }
+
+    /* Responsive tweak for mobile view */
+@media (max-width: 420px) {
+  .share-modal{
+    width: min(96vw, 326px);
+    padding: 16px 6vw 12px;
+  }
+}
   </style>
 </head>
 <body>

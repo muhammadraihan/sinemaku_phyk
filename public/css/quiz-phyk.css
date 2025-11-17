@@ -263,3 +263,14 @@ body {
   .brand-top { width: 120px; }
   .q-option { grid-template-columns: 48px 1fr; }
 }
+
+@media (max-width: 600px){
+  .quiz-wrap.container {
+    padding: 44px 12px 40px 12px;
+    /* padding top jadi 44px, bawah & samping juga lebih kecil agar balance */
+  }
+  .brand-top { width: 110px; }
+  .q-option { grid-template-columns: 46px 1fr; }
+  .hashtag-img { width: 132px; }
+}
+

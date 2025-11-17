@@ -15,14 +15,16 @@
       --muted: #6b7a90;
       --card: #f6f8fb;
     }
+
     @font-face {
-  font-family: 'caxton-lt-book';
-  src: url('/fonts/caxton-lt-book.woff2') format('woff2'),
-       url('/fonts/caxton-lt-book.woff')  format('woff');
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
+      font-family: 'caxton-lt-book';
+      src: url('/fonts/caxton-lt-book.woff2') format('woff2'),
+           url('/fonts/caxton-lt-book.woff')  format('woff');
+      font-weight: 400;
+      font-style: normal;
+      font-display: swap;
+    }
+
     body {
       font-family: "Roboto", system-ui, -apple-system, Segoe UI, Arial;
       color: #1b2430;
@@ -179,7 +181,6 @@
       animation: btnBreath 3s ease-in-out 1s infinite;
     }
 
-    /* shine lembut di hover */
     .btn-pill::before{
       content:"";
       position:absolute;
@@ -249,17 +250,45 @@
       margin-top: .75rem;
     }
 
-    .hashtag {
-      color: var(--brand);
-      font-weight: 700;
-      letter-spacing: .2px;
-      margin-top: 3rem;
+    /* hashtag: animasi sama dengan index */
+    .hashtag-img{
+      width:min(60vw,240px);
+      height:auto;
+      margin-top:20px;
+      opacity:0;
+      transform:translateY(6px);
+      animation: hashtagIn 0.5s ease-out 0.5s forwards;
+    }
+
+    @keyframes hashtagIn{
+      to{
+        opacity:1;
+        transform:translateY(0);
+      }
     }
 
     @media (max-width: 576px) {
       .form-card { padding: 1.5rem; }
       .privacy { font-size: 0.85rem; }
     }
+
+    @media (max-width: 576px) {
+  .btn-pill {
+    font-size: .78rem;
+    padding: .58rem 0.3rem;
+    min-width: 100px;
+    max-width: 150px;
+    width: auto;
+    border-radius: 22px;
+    letter-spacing: 0.03em;
+  }
+  .hashtag-img {
+    width: 130px !important;
+    min-width: 0;
+    margin-top: 15px;
+  }
+}
+
   </style>
 </head>
 <body>
@@ -316,7 +345,11 @@
 
     {{-- Hashtag --}}
     <div class="text-center">
-      <img src="{{ asset('img/hashtag.png') }}" alt="#BeraniMelepaskan" style="width:min(60vw,240px);height:auto; margin-top:20px">
+      <img 
+        src="{{ asset('img/hashtag.png') }}" 
+        alt="#BeraniMelepaskan"
+        class="hashtag-img"
+      >
     </div>
   </main>
 
