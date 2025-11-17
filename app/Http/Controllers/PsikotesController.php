@@ -3,6 +3,11 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Str;
+use Intervention\Image\ImageManagerStatic as Image;
+use Symfony\Component\Process\Process;
 
 class PsikotesController extends Controller
 {
@@ -142,6 +147,27 @@ class PsikotesController extends Controller
         //     'current' => $currentIndex + 1,
         // ]);
 
+        $data = $request->validate(
+            [
+                'name'  => ['required','string','min:2','max:20'],
+                'email' => ['required','email:rfc,dns','max:100'],
+            ],
+            // custom messages (Indonesia)
+            [
+                'name.required'  => 'Nama tidak boleh kosong.',
+                'name.min'       => 'Nama minimal 2 karakter.',
+                'name.max'       => 'Nama maksimal 20 karakter.',
+                'email.required' => 'Email tidak boleh kosong.',
+                'email.email'    => 'Format email tidak valid.',
+                'email.max'      => 'Email maksimal 100 karakter.',
+            ],
+            // optional: rename attribute (kalau mau)
+            [
+                'name'  => 'Nama',
+                'email' => 'Email',
+            ]
+        );
+
         session(['quiz_name' => $request->name]);
         return redirect()->route('quiz.start');
     }
@@ -221,6 +247,29 @@ Terima kasih sudah bertahan sejauh ini. Langkah berikutnya milikmu sepenuhnya.',
         ];
         $desc = $descs[$dominant] ?? '';
 
+        $phase = strtolower($dominant);
+
+        // 1) Ambil semua file video di folder public/video/{phase}
+        $dir = public_path("video/{$phase}");
+        abort_unless(is_dir($dir), 404, "Folder phase tidak ditemukan: {$dir}");
+
+        $extensions = ['mp4','mov','m4v','webm','mkv'];
+        $files = collect(File::files($dir))
+            ->filter(fn($f) => in_array(strtolower($f->getExtension()), $extensions))
+            ->map(fn($f) => $f->getPathname())
+            ->values()
+            ->all();
+
+        // 2) Pilih 1 secara acak
+        $chosenPath = $files ? Arr::random($files) : null;
+
+        // 3) Konversi absolute path → URL publik (asset)
+        $videoUrl = null;
+        if ($chosenPath) {
+            $relative = ltrim(str_replace(public_path(), '', $chosenPath), DIRECTORY_SEPARATOR);
+            $videoUrl = asset($relative);
+        }
+
         // dd($dominant, $percentages, $counts, $total, $desc, array_values($phaseMap));
 
         return view('result', [
@@ -230,7 +279,156 @@ Terima kasih sudah bertahan sejauh ini. Langkah berikutnya milikmu sepenuhnya.',
             'total'        => $total,
             'desc'         => $desc,
             'phases'       => array_values($phaseMap),
-            'name'         => session('quiz_name')
+            'name'         => session('quiz_name'),
+            'video'        => $videoUrl
         ]);
+    }
+
+    private function makeOverlayBadge(string $name): string
+    {
+        $name  = Str::title(trim($name));
+        $fontFile = public_path('fonts/caxton-lt-book.TTF');
+
+        // Gaya
+        $fontSize   = 48;              // sesuaikan
+        $linePadY   = 18;              // padding vertikal
+        $gap        = 24;              // jarak setelah badge ke teks ekor
+        $badgePadX  = 24;              // padding kiri/kanan di dalam badge
+        $badgePadY  = 10;              // padding atas/bawah di dalam badge
+        $tailText   = ', kamu sedang dalam fase'; // teks setelah nama
+        $textColor  = '#3B84AD';       // biru teks
+        $badgeBg    = '#F5A623';       // kuning badge
+        $badgeText  = '#ffffff';       // putih teks badge
+
+        // --- Hitung bounding box teks
+        $bboxName = imagettfbbox($fontSize, 0, $fontFile, $name);
+        $nameW = abs($bboxName[4] - $bboxName[0]);
+        $nameH = abs($bboxName[5] - $bboxName[1]);
+
+        $bboxTail = imagettfbbox($fontSize, 0, $fontFile, $tailText);
+        $tailW = abs($bboxTail[4] - $bboxTail[0]);
+        $tailH = abs($bboxTail[5] - $bboxTail[1]);
+
+        // Ukuran badge + kanvas
+        $badgeW = $nameW + ($badgePadX * 2);
+        $badgeH = $nameH + ($badgePadY * 2);
+
+        $lineH  = max($badgeH, $tailH) + ($linePadY * 2);
+        $canvasW = $badgeW + $gap + $tailW;
+        $canvasH = $lineH;
+
+        // Buat kanvas transparan
+        $img = Image::canvas($canvasW, $canvasH, [0,0,0,0]);
+
+        // Posisi baseline (vertikal ditengah)
+        $yCenter = (int) floor($canvasH / 2);
+
+        // --- Gambar badge (rounded)
+        $badgeX = 0;
+        $badgeY = (int) ($yCenter - $badgeH / 2);
+        // rounded rectangle manual
+        $img->rectangle($badgeX, $badgeY, $badgeX + $badgeW, $badgeY + $badgeH, function($draw) use ($badgeBg) {
+            $draw->background($badgeBg);
+            $draw->border(0, 'transparent');
+        });
+
+        // Tulis NAMA di dalam badge
+        $nameTextX = $badgeX + $badgePadX;
+        // baseline teks: y = center + (height/2) - descent; approximasi gunakan + nameH/2
+        $nameTextY = (int)($yCenter + ($nameH/2) - 6);
+        $img->text($name, $nameTextX, $nameTextY, function($font) use ($fontFile, $fontSize, $badgeText) {
+            $font->file($fontFile);
+            $font->size($fontSize);
+            $font->color($badgeText);
+        });
+
+        // Tulis tail di kanan badge
+        $tailX = $badgeX + $badgeW + $gap;
+        $tailY = (int)($yCenter + ($tailH/2) - 6);
+        $img->text($tailText, $tailX, $tailY, function($font) use ($fontFile, $fontSize, $textColor) {
+            $font->file($fontFile);
+            $font->size($fontSize);
+            $font->color($textColor);
+        });
+
+        // Simpan ke file tmp
+        $outDir = storage_path('app/tmp');
+        if (!is_dir($outDir)) mkdir($outDir, 0775, true);
+        $overlayPath = $outDir . '/overlay_' . Str::random(6) . '.png';
+        $img->save($overlayPath, 100, 'png');
+
+        return $overlayPath;
+    }
+
+    public function video(Request $request)
+    {
+        $name = $request->input('name', session('quiz_name', 'Kamu'));
+        $phase = strtolower($request->phase);
+
+        // --- PATHS ---------------------------------------------------------------
+        $publicPathPart = parse_url($request->video, PHP_URL_PATH);
+        // dd($publicPathPart);
+        $template = public_path($publicPathPart);
+        // $dir = public_path("video/{$phase}");
+        // $files = glob($dir.'/*.{mp4,mov,m4v,webm,mkv}', GLOB_BRACE);
+        // abort_if(empty($files), 404, "Tidak ada file video valid di folder: {$dir}");
+        // $template = $files[random_int(0, count($files)-1)];
+        $overlayPng = $this->makeOverlayBadge($name);            // pastikan fungsi ini return ABSOLUTE path PNG
+        $outDir = public_path('tmp');
+        if (!is_dir($outDir)) mkdir($outDir, 0775, true);
+        if (!is_writable($outDir)) {
+            abort(500, "Folder output tidak writable: {$outDir}");
+        }
+
+        $output = $outDir . '/share_' . Str::random(8) . '.mp4';
+
+        // Validasi input
+        if (!file_exists($template)) {
+            abort(404, "Template video tidak ditemukan: {$template}");
+        }
+        if (!file_exists($overlayPng)) {
+            abort(500, "Overlay PNG tidak ditemukan: {$overlayPng}");
+        }
+
+        // --- FILTER: posisi & delay 5 detik -------------------------------------
+        $filter = "[0:v][1:v]overlay=x=(main_w-overlay_w)/2+100:y=main_h*0.78:enable='gte(t,5)'[vout]";
+
+        // --- JALANKAN FFMPEG -----------------------------------------------------
+        $cmd = [
+            'ffmpeg','-y',
+            '-i', $template,
+            '-i', $overlayPng,
+            '-filter_complex', $filter,
+            '-map', '[vout]', '-map', '0:a?',   // audio optional
+            '-c:v', 'libx264',                  // pastikan ada encoder video
+            '-pix_fmt', 'yuv420p',              // kompatibel player
+            '-c:a', 'copy',                     // audio langsung copy (cepat)
+            $output,
+        ];
+
+        $proc = new Process($cmd);
+        // Jika ffmpeg tidak ada di PATH, set env PATH atau pakai absolute path ffmpeg, mis:
+        // $proc = new Process(['/usr/bin/ffmpeg', ...]);
+        $proc->setTimeout(300);
+        $proc->run();
+
+        // --- DIAGNOSA ------------------------------------------------------------
+        if (!$proc->isSuccessful() || !file_exists($output)) {
+            \Log::error('FFmpeg failed', [
+                'cmd'   => implode(' ', $cmd),
+                'out'   => $proc->getOutput(),
+                'err'   => $proc->getErrorOutput(),
+                'exists'=> file_exists($output) ? 'yes' : 'no',
+            ]);
+            // Jangan hapus overlay dulu kalau mau cek manual masalahnya
+            // @unlink($overlayPng);
+            abort(500, "Gagal membuat video. Lihat log untuk detail.");
+        }
+
+        // Cleanup overlay sementara
+        @unlink($overlayPng);
+
+        // --- KIRIM FILE ----------------------------------------------------------
+        return response()->download($output, 'hasil-kamu.mp4')->deleteFileAfterSend(true);
     }
 }

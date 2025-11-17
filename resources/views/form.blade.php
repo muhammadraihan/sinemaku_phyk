@@ -311,7 +311,7 @@
           <label for="name" class="form-label">Nama</label>
           <input type="text" id="name" name="name"
                  class="form-control form-control-lg @error('name') is-invalid @enderror"
-                 placeholder="Nama kamu" value="{{ old('name') }}" required>
+                 placeholder="Nama panggilan kamu" value="{{ old('name') }}" required>
           @error('name')
             <div class="invalid-feedback">{{ $message }}</div>
           @enderror

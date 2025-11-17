@@ -27,3 +27,5 @@ Route::get('/questions', [PsikotesController::class, 'questions'])->name('quiz.s
 Route::post('/answer', [PsikotesController::class, 'store'])->name('store.answer');
 Route::post('/form', [PsikotesController::class, 'store_form'])->name('store.form');
 Route::get('/result', [PsikotesController::class, 'result'])->name('result');
+Route::post('/share/video', [PsikotesController::class, 'video'])
+    ->name('share.video');

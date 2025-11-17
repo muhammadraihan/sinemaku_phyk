@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="csrf-token" content="{{ csrf_token() }}">
   <title>Hasil Tes — Patah Hati yang Kupilih</title>
 
   {{-- Fonts --}}
@@ -18,8 +19,7 @@
 
     @font-face {
       font-family: 'caxton-lt-book';
-      src: url('/fonts/caxton-lt-book.woff2') format('woff2'),
-           url('/fonts/caxton-lt-book.woff')  format('woff');
+      src: url('/fonts/caxton-lt-book.woff')  format('woff');
       font-weight: 400;
       font-style: normal;
       font-display: swap;
@@ -130,14 +130,13 @@
     .special-thumb {
       position: relative;
       flex: 0 0 180px;
-      aspect-ratio: 1/1;
-      background: url('{{ asset('img/video-thumb.png') }}') center/cover no-repeat;
+      aspect-ratio: 9/16;
+      /* background: url('{{ asset('img/video-thumb.png') }}') center/cover no-repeat; */
       border-radius: 10px;
       overflow:hidden;
     }
 
     .special-thumb::after {
-      content: '▶';
       position: absolute;
       color: white;
       font-size: 2rem;
@@ -155,6 +154,13 @@
       mix-blend-mode:soft-light;
       opacity:0;
       transition:opacity .3s ease-out;
+    }
+
+    .special-video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover; /* penuh & ter-crop rapi */
+      display: block;
     }
 
     .special-box:hover .special-thumb::before{
@@ -518,7 +524,23 @@
 
     {{-- Pesan Spesial --}}
     <div class="special-box">
-      <div class="special-thumb"></div>
+      <div class="special-thumb">
+        @if(!empty($video))
+          <video class="special-video"
+                src="{{ $video }}"
+                playsinline
+                autoplay
+                loop
+                controls
+                controlsList="nodownload noplaybackrate nofullscreen"
+                disablepictureinpicture>
+            Maaf, browser kamu tidak mendukung video tag.
+          </video>
+        @else
+          {{-- Fallback jika tidak ada video --}}
+          <div class="no-video">Video belum tersedia untuk fase ini.</div>
+        @endif
+      </div>
       <div class="special-text">
         <h3>Pesan Spesial dari 👀</h3>
         <p>Biar bisa move on ke fase selanjutnya, yuk lihat video pesan dari seseorang!</p>
@@ -535,73 +557,93 @@
     </div>
   </div>
 
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"
+          integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo="
+          crossorigin="anonymous"></script>
   <script>
-    const LOADING_DURATION = 2000;
+    var LOADING_DURATION = 2000;
 
-    window.addEventListener('load', function(){
-      const overlay = document.getElementById('loadingOverlay');
-      const result  = document.getElementById('resultContainer');
+    // saat window selesai load
+    $(window).on('load', function () {
+      var $overlay = $('#loadingOverlay');
+      var $result  = $('#resultContainer');
 
-      setTimeout(function(){
-        overlay.classList.add('is-hidden');
-        result.classList.add('is-visible');
+      setTimeout(function () {
+        $overlay.addClass('is-hidden');
+        $result.addClass('is-visible');
       }, LOADING_DURATION);
     });
 
     // Modal Bagikan Hasil
-    (function(){
-      const modal      = document.getElementById('shareModal');
-      const openBtn    = document.getElementById('shareOpenBtn');
-      const closeBtn   = document.getElementById('shareModalClose');
+    (function () {
+      var $modal   = $('#shareModal');
+      var $openBtn = $('#shareOpenBtn');
+      var $closeBtn= $('#shareModalClose');
 
-      if(!modal || !openBtn || !closeBtn) return;
+      if (!$modal.length || !$openBtn.length || !$closeBtn.length) return;
 
-      function openModal(){
-        modal.classList.add('is-open');
-      }
+      function openModal()  { $modal.addClass('is-open'); }
+      function closeModal() { $modal.removeClass('is-open'); }
 
-      function closeModal(){
-        modal.classList.remove('is-open');
-      }
+      // buka/tutup
+      $openBtn.on('click', openModal);
+      $closeBtn.on('click', closeModal);
 
-      openBtn.addEventListener('click', function(){
-        openModal();
-      });
-
-      closeBtn.addEventListener('click', function(){
-        closeModal();
-      });
-
-      // klik di area gelap menutup modal
-      modal.addEventListener('click', function(e){
-        if(e.target === modal){
-          closeModal();
-        }
+      // klik area gelap menutup modal
+      $modal.on('click', function (e) {
+        if ($(e.target).is($modal)) closeModal();
       });
 
       // ESC untuk menutup
-      document.addEventListener('keydown', function(e){
-        if(e.key === 'Escape'){
-          closeModal();
-        }
+      $(document).on('keydown', function (e) {
+        if (e.key === 'Escape') closeModal();
       });
 
       // Aksi pilihan share
-      modal.querySelectorAll('.share-option').forEach(function(opt){
-        opt.addEventListener('click', function(){
-          const type = this.getAttribute('data-share');
+      $modal.find('.share-option').on('click', function () {
+        var type = $(this).data('share');
 
-          if(type === 'poster'){
-            console.log('Bagikan Poster');
-            // TODO: panggil logika share poster di sini
-          }
-          if(type === 'video'){
-            console.log('Bagikan Video');
-            // TODO: panggil logika share video di sini
-          }
+        if (type === 'poster') {
+          console.log('Bagikan Poster');
+          // TODO: logika share poster di sini
+        }
 
-          closeModal();
-        });
+        if (type === 'video') {
+          console.log('Bagikan Video');
+
+          var name = "{{ \Illuminate\Support\Str::title($name ?? session('quiz_name')) }}";
+          var dominant = "{{ $dominant }}";
+          var video = "{{ $video }}";
+
+          $.ajax({
+            url: "{{ route('share.video') }}",
+            method: "POST",
+            data: { 
+              name: name ,
+              phase: dominant,
+              video: video
+            },
+            headers: {
+              'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            xhrFields: { responseType: 'blob' } // penting agar terima blob
+          })
+          .done(function (blob) {
+            var url = window.URL.createObjectURL(blob);
+            var a   = document.createElement('a');
+            a.href = url;
+            a.download = 'hasil-kamu.mp4';
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            window.URL.revokeObjectURL(url);
+          })
+          .fail(function () {
+            alert('Gagal membuat video');
+          });
+        }
+
+        closeModal();
       });
     })();
   </script>
