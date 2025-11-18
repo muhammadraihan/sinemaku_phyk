@@ -451,7 +451,7 @@ Terima kasih sudah bertahan sejauh ini. Langkah berikutnya milikmu sepenuhnya.',
                 'exists'=> file_exists($output) ? 'yes' : 'no',
             ]);
             // @unlink($overlayPng); // simpan sementara buat investigasi
-            abort(500, "Gagal membuat video. " . $proc->getErrorOutput());
+            abort(500, "Gagal membuat video. FILTER = ". $filter . "|". $proc->getOutput() ."|". $proc->getErrorOutput());
         }
 
         // Cleanup overlay sementara
