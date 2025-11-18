@@ -408,7 +408,7 @@
      /* Footer strip – full width */
 .phyk-footer{
   background:var(--footer-bg);
-  padding:28px 16px 22px;
+  padding:22px 16px 18px;
   text-align:center;
   flex-shrink:0;
   margin-top:0;
@@ -419,7 +419,7 @@
       display:flex;
       flex-direction:column;
       align-items:center;
-      gap:6px;
+      gap:10px;
     }
     .phyk-footer-top{
       display:flex;
@@ -431,27 +431,27 @@
       color:var(--brand-blue);
     }
     .phyk-footer-top .footer-title{
-      height:32px;
       display:flex;
       align-items:center;
     }
     .phyk-footer-top .footer-title img{
-      height:62px;
+      height:52px;
       width:auto;
       display:block;
-      margin-top: 20px;
+      margin:0;
     }
     .phyk-footer-top .footer-text{
-      font-size:1.2rem;
+      font-size:1.05rem;
+      margin-top:6px;
     }
     .phyk-footer-top .footer-text strong{
       font-weight:600;
     }
     .phyk-footer-hashtag img{
-      height:30px;
+      height:26px;
       width:auto;
       display:block;
-      margin-top: 25px;
+      margin-top: 4px;
     }
 
     @media (min-width: 992px){
@@ -467,6 +467,10 @@
  main.container.hero{
   flex:1 0 auto; /* konten utama fleksibel */
 }
+@media (max-width: 576px){
+      .phyk-footer-top .footer-text{ font-size:.9rem;}
+      .phyk-footer-hashtag img{ height:22px;}
+    }
 
     @keyframes spin { to{ transform:rotate(360deg); } }
     @keyframes greetIn{ to{ opacity:1; transform:translateY(0); } }

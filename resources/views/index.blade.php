@@ -38,13 +38,37 @@
       opacity:0;
       animation: bodyFadeIn 0.9s ease-out forwards;
       display:flex;
-  flex-direction:column;
-  min-height:100vh; /* penting */
+      flex-direction:column;
+      min-height:100vh;
     }
 
     @keyframes bodyFadeIn{
       from{ opacity:0; transform:translateY(8px);}
       to{ opacity:1; transform:translateY(0);}
+    }
+
+    /* Logo Sinemaku sebagai logo web di kiri atas */
+    .sinemaku-brand{
+      position:fixed;
+      top:24px;
+      left:28px;
+      z-index:40;
+      display:inline-block;
+    }
+    .sinemaku-brand img{
+      width:180px;       /* desktop */
+      height:auto;
+      display:block;
+    }
+
+    @media (max-width: 768px){
+      .sinemaku-brand{
+        top:20px;
+        left:24px;
+      }
+      .sinemaku-brand img{
+        width:100px;      /* mobile & tablet kecil */
+      }
     }
 
     .hero{
@@ -78,7 +102,7 @@
       to{ opacity:1; transform:translateY(0);}
     }
 
-    /* Area foto + logo produser */
+    /* Area foto */
     .photo-stack{
       position:relative;
       height:520px;
@@ -105,25 +129,7 @@
       100%{ opacity:1; transform:translate3d(0, 10px, 0);}
     }
 
-    /* Logo Sinemaku – ditempel di atas foto wanita (kiri) */
-    .sinemaku-logo{
-      position:absolute;
-      top:2px;
-      left:60px;
-      z-index:3;
-    }
-    .sinemaku-logo img{
-      width:100px;
-      max-width:20vw;
-      height:auto;
-      display:block;
-      margin:0;
-      border-radius:0;
-      box-shadow:none;
-      background:transparent;
-    }
-
-    /* Icon hati patah yang overlap di tengah */
+    /* Icon hati patah yang overlap di tengah (kalau dipakai) */
     .broken-heart{
       position:absolute;
       left:340px;
@@ -261,11 +267,10 @@
     /* Footer strip */
     .phyk-footer{
       background:var(--footer-bg);
-      padding:28px 16px 22px;
+      padding:22px 16px 18px;
       text-align:center;
-      flex-shrink:0;    /* cegah menyusut */
-  text-align:center;
-  margin-top:0;     /* pastikan tidak ada margin ekstra */
+      flex-shrink:0;
+      margin-top:0;
     }
     .phyk-footer-inner{
       max-width:720px;
@@ -273,7 +278,7 @@
       display:flex;
       flex-direction:column;
       align-items:center;
-      gap:6px;
+      gap:10px;
     }
     .phyk-footer-top{
       display:flex;
@@ -285,27 +290,27 @@
       color:var(--brand-blue);
     }
     .phyk-footer-top .footer-title{
-      height:32px;
       display:flex;
       align-items:center;
     }
     .phyk-footer-top .footer-title img{
-      height:62px;
+      height:52px;
       width:auto;
       display:block;
-      margin-top: 20px;
+      margin:0;
     }
     .phyk-footer-top .footer-text{
-      font-size:1.2rem;
+      font-size:1.05rem;
+      margin-top:6px;
     }
     .phyk-footer-top .footer-text strong{
       font-weight:600;
     }
     .phyk-footer-hashtag img{
-      height:30px;
+      height:26px;
       width:auto;
       display:block;
-      margin-top: 25px;
+      margin-top:4px;
     }
 
     @media (min-width: 992px){
@@ -321,31 +326,40 @@
     @media (max-width: 375px){
       .btn-primary{ width:100%; }
     }
+
     /* Bungkus konten utama agar tidak ‘makan’ footer */
-main.container.hero{
-  flex:1 0 auto; /* konten utama fleksibel */
-}
+    main.container.hero{
+      flex:1 0 auto;
+    }
+
+    /* Tweak khusus mobile untuk jarak foto–judul */
+    @media (max-width: 576px){
+      .photo-stack{
+        height: 280px;
+      }
+      .hero{
+        padding-block: 28px 2px;
+        margin-top: 18px;
+      }
+      .main-image{
+        transform: translate3d(0, 6px, 0);
+      }
+    }
   </style>
 </head>
 <body>
 
+  {{-- Logo Sinemaku di pojok kiri atas halaman --}}
+  <a href="javascript:void(0)" class="sinemaku-brand" aria-label="Sinemaku Pictures">
+    <img src="{{ asset('img/sinemakulogo-blue.png') }}" alt="Sinemaku Pictures Logo">
+  </a>
+
   <main class="container hero">
     <div class="row align-items-center justify-content-between g-5">
 
-      {{-- Kolom kiri: logo produser + tumpukan foto --}}
+      {{-- Kolom kiri: tumpukan foto --}}
       <div class="col-12 col-lg-7 text-center mb-5 mb-lg-0">
         <div class="photo-stack">
-          {{-- Logo Sinemaku (placeholder, nanti diganti) --}}
-          <a href="https://yt3.googleusercontent.com/ytc/AIdro_kaTNs7REr-vqv3ITJOVmbMUE1_JQs7ih-mjpYQy05jKg=s900-c-k-c0x00ffffff-no-rj"
-             class="sinemaku-logo"
-             target="_blank"
-             rel="noopener"
-             aria-label="Sinemaku Pictures">
-            <img
-              src="https://yt3.googleusercontent.com/ytc/AIdro_kaTNs7REr-vqv3ITJOVmbMUE1_JQs7ih-mjpYQy05jKg=s900-c-k-c0x00ffffff-no-rj"
-              alt="Sinemaku Pictures">
-          </a>
-
           <img 
             src="{{ asset('img/hero.png') }}" 
             alt="Patah Hati Image"
