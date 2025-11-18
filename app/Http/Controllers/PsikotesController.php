@@ -284,134 +284,134 @@ Terima kasih sudah bertahan sejauh ini. Langkah berikutnya milikmu sepenuhnya.',
         ]);
     }
 
-    // private function makeOverlayBadge(string $name): string
-    // {
-    //     $name  = Str::title(trim($name));
-    //     $fontFile = public_path('fonts/caxton-lt-book.TTF');
-
-    //     // Gaya
-    //     $fontSize   = 48;              // sesuaikan
-    //     $linePadY   = 18;              // padding vertikal
-    //     $gap        = 24;              // jarak setelah badge ke teks ekor
-    //     $badgePadX  = 24;              // padding kiri/kanan di dalam badge
-    //     $badgePadY  = 10;              // padding atas/bawah di dalam badge
-    //     $tailText   = ', kamu sedang dalam fase'; // teks setelah nama
-    //     $textColor  = '#3B84AD';       // biru teks
-    //     $badgeBg    = '#F5A623';       // kuning badge
-    //     $badgeText  = '#ffffff';       // putih teks badge
-
-    //     // --- Hitung bounding box teks
-    //     $bboxName = imagettfbbox($fontSize, 0, $fontFile, $name);
-    //     $nameW = abs($bboxName[4] - $bboxName[0]);
-    //     $nameH = abs($bboxName[5] - $bboxName[1]);
-
-    //     $bboxTail = imagettfbbox($fontSize, 0, $fontFile, $tailText);
-    //     $tailW = abs($bboxTail[4] - $bboxTail[0]);
-    //     $tailH = abs($bboxTail[5] - $bboxTail[1]);
-
-    //     // Ukuran badge + kanvas
-    //     $badgeW = $nameW + ($badgePadX * 2);
-    //     $badgeH = $nameH + ($badgePadY * 2);
-
-    //     $lineH  = max($badgeH, $tailH) + ($linePadY * 2);
-    //     $canvasW = $badgeW + $gap + $tailW;
-    //     $canvasH = $lineH;
-
-    //     // Buat kanvas transparan
-    //     $img = Image::canvas($canvasW, $canvasH, [0,0,0,0]);
-
-    //     // Posisi baseline (vertikal ditengah)
-    //     $yCenter = (int) floor($canvasH / 2);
-
-    //     // --- Gambar badge (rounded)
-    //     $badgeX = 0;
-    //     $badgeY = (int) ($yCenter - $badgeH / 2);
-    //     // rounded rectangle manual
-    //     $img->rectangle($badgeX, $badgeY, $badgeX + $badgeW, $badgeY + $badgeH, function($draw) use ($badgeBg) {
-    //         $draw->background($badgeBg);
-    //         $draw->border(0, 'transparent');
-    //     });
-
-    //     // Tulis NAMA di dalam badge
-    //     $nameTextX = $badgeX + $badgePadX;
-    //     // baseline teks: y = center + (height/2) - descent; approximasi gunakan + nameH/2
-    //     $nameTextY = (int)($yCenter + ($nameH/2) - 6);
-    //     $img->text($name, $nameTextX, $nameTextY, function($font) use ($fontFile, $fontSize, $badgeText) {
-    //         $font->file($fontFile);
-    //         $font->size($fontSize);
-    //         $font->color($badgeText);
-    //     });
-
-    //     // Tulis tail di kanan badge
-    //     $tailX = $badgeX + $badgeW + $gap;
-    //     $tailY = (int)($yCenter + ($tailH/2) - 6);
-    //     $img->text($tailText, $tailX, $tailY, function($font) use ($fontFile, $fontSize, $textColor) {
-    //         $font->file($fontFile);
-    //         $font->size($fontSize);
-    //         $font->color($textColor);
-    //     });
-
-    //     // Simpan ke file tmp
-    //     $outDir = storage_path('app/tmp');
-    //     if (!is_dir($outDir)) mkdir($outDir, 0775, true);
-    //     $overlayPath = $outDir . '/overlay_' . Str::random(6) . '.png';
-    //     $img->save($overlayPath, 100, 'png');
-
-    //     return $overlayPath;
-    // }
-
     private function makeOverlayBadge(string $name): string
     {
-        $name = Str::title(trim($name) ?: 'Kamu');
-
+        $name  = Str::title(trim($name));
         $fontFile = public_path('fonts/caxton-lt-book.TTF');
-        if (!file_exists($fontFile)) {
-            throw new \RuntimeException("Font tidak ditemukan: {$fontFile}");
-        }
 
-        // Ukuran badge tetap (cocok dengan yang sebelumnya muncul di ffmpeg log)
-        $width  = 1026;
-        $height = 105;
+        // Gaya
+        $fontSize   = 48;              // sesuaikan
+        $linePadY   = 18;              // padding vertikal
+        $gap        = 24;              // jarak setelah badge ke teks ekor
+        $badgePadX  = 24;              // padding kiri/kanan di dalam badge
+        $badgePadY  = 10;              // padding atas/bawah di dalam badge
+        $tailText   = ', kamu sedang dalam fase'; // teks setelah nama
+        $textColor  = '#3B84AD';       // biru teks
+        $badgeBg    = '#F5A623';       // kuning badge
+        $badgeText  = '#ffffff';       // putih teks badge
 
-        // Buat canvas transparan
-        $img = Image::canvas($width, $height, [0, 0, 0, 0]);
+        // --- Hitung bounding box teks
+        $bboxName = imagettfbbox($fontSize, 0, $fontFile, $name);
+        $nameW = abs($bboxName[4] - $bboxName[0]);
+        $nameH = abs($bboxName[5] - $bboxName[1]);
 
-        // Warna background & teks
-        $badgeBg   = '#F5A623';  // kuning
-        $badgeText = '#FFFFFF';  // putih
-        $fontSize  = 48;
+        $bboxTail = imagettfbbox($fontSize, 0, $fontFile, $tailText);
+        $tailW = abs($bboxTail[4] - $bboxTail[0]);
+        $tailH = abs($bboxTail[5] - $bboxTail[1]);
 
-        // Gambar rectangle penuh sebagai badge
-        $img->rectangle(0, 0, $width, $height, function ($draw) use ($badgeBg) {
+        // Ukuran badge + kanvas
+        $badgeW = $nameW + ($badgePadX * 2);
+        $badgeH = $nameH + ($badgePadY * 2);
+
+        $lineH  = max($badgeH, $tailH) + ($linePadY * 2);
+        $canvasW = $badgeW + $gap + $tailW;
+        $canvasH = $lineH;
+
+        // Buat kanvas transparan
+        $img = Image::canvas($canvasW, $canvasH, [0,0,0,0]);
+
+        // Posisi baseline (vertikal ditengah)
+        $yCenter = (int) floor($canvasH / 2);
+
+        // --- Gambar badge (rounded)
+        $badgeX = 0;
+        $badgeY = (int) ($yCenter - $badgeH / 2);
+        // rounded rectangle manual
+        $img->rectangle($badgeX, $badgeY, $badgeX + $badgeW, $badgeY + $badgeH, function($draw) use ($badgeBg) {
             $draw->background($badgeBg);
             $draw->border(0, 'transparent');
         });
 
-        // Hitung posisi teks supaya benar-benar center
-        $bbox = imagettfbbox($fontSize, 0, $fontFile, $name);
-        $textWidth  = $bbox[2] - $bbox[0];
-        $textHeight = $bbox[1] - $bbox[7];
-
-        $x = ($width  - $textWidth) / 2;
-        $y = ($height + $textHeight) / 2;
-
-        $img->text($name, $x, $y, function ($font) use ($fontFile, $fontSize, $badgeText) {
+        // Tulis NAMA di dalam badge
+        $nameTextX = $badgeX + $badgePadX;
+        // baseline teks: y = center + (height/2) - descent; approximasi gunakan + nameH/2
+        $nameTextY = (int)($yCenter + ($nameH/2) - 6);
+        $img->text($name, $nameTextX, $nameTextY, function($font) use ($fontFile, $fontSize, $badgeText) {
             $font->file($fontFile);
             $font->size($fontSize);
             $font->color($badgeText);
         });
 
+        // Tulis tail di kanan badge
+        $tailX = $badgeX + $badgeW + $gap;
+        $tailY = (int)($yCenter + ($tailH/2) - 6);
+        $img->text($tailText, $tailX, $tailY, function($font) use ($fontFile, $fontSize, $textColor) {
+            $font->file($fontFile);
+            $font->size($fontSize);
+            $font->color($textColor);
+        });
+
         // Simpan ke file tmp
         $outDir = storage_path('app/tmp');
-        if (!is_dir($outDir)) {
-            mkdir($outDir, 0775, true);
-        }
-
+        if (!is_dir($outDir)) mkdir($outDir, 0775, true);
         $overlayPath = $outDir . '/overlay_' . Str::random(6) . '.png';
         $img->save($overlayPath, 100, 'png');
 
         return $overlayPath;
     }
+
+    // private function makeOverlayBadge(string $name): string
+    // {
+    //     $name = Str::title(trim($name) ?: 'Kamu');
+
+    //     $fontFile = public_path('fonts/caxton-lt-book.TTF');
+    //     if (!file_exists($fontFile)) {
+    //         throw new \RuntimeException("Font tidak ditemukan: {$fontFile}");
+    //     }
+
+    //     // Ukuran badge tetap (cocok dengan yang sebelumnya muncul di ffmpeg log)
+    //     $width  = 1026;
+    //     $height = 105;
+
+    //     // Buat canvas transparan
+    //     $img = Image::canvas($width, $height, [0, 0, 0, 0]);
+
+    //     // Warna background & teks
+    //     $badgeBg   = '#F5A623';  // kuning
+    //     $badgeText = '#FFFFFF';  // putih
+    //     $fontSize  = 48;
+
+    //     // Gambar rectangle penuh sebagai badge
+    //     $img->rectangle(0, 0, $width, $height, function ($draw) use ($badgeBg) {
+    //         $draw->background($badgeBg);
+    //         $draw->border(0, 'transparent');
+    //     });
+
+    //     // Hitung posisi teks supaya benar-benar center
+    //     $bbox = imagettfbbox($fontSize, 0, $fontFile, $name);
+    //     $textWidth  = $bbox[2] - $bbox[0];
+    //     $textHeight = $bbox[1] - $bbox[7];
+
+    //     $x = ($width  - $textWidth) / 2;
+    //     $y = ($height + $textHeight) / 2;
+
+    //     $img->text($name, $x, $y, function ($font) use ($fontFile, $fontSize, $badgeText) {
+    //         $font->file($fontFile);
+    //         $font->size($fontSize);
+    //         $font->color($badgeText);
+    //     });
+
+    //     // Simpan ke file tmp
+    //     $outDir = storage_path('app/tmp');
+    //     if (!is_dir($outDir)) {
+    //         mkdir($outDir, 0775, true);
+    //     }
+
+    //     $overlayPath = $outDir . '/overlay_' . Str::random(6) . '.png';
+    //     $img->save($overlayPath, 100, 'png');
+
+    //     return $overlayPath;
+    // }
 
     public function video(Request $request)
     {
