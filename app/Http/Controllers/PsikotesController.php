@@ -385,16 +385,10 @@ Terima kasih sudah bertahan sejauh ini. Langkah berikutnya milikmu sepenuhnya.',
 
         // --- FILTER: posisi & delay 5 detik -------------------------------------
         // Catatan: Process TIDAK via shell, jadi string ini dikirim utuh ke ffmpeg.
-       $filter = implode(';', [
-            // siapkan overlay: RGBA + delay 5 detik
-            '[1:v]format=rgba,setpts=PTS+5/TB[ov]',
-            // siapkan base video: RGBA
-            '[0:v]format=rgba[base]',
-            // tempel overlay (paksa koordinat integer)
-            "[base][ov]overlay=x=floor((W-w)/2+100):y=floor(H*0.78)[tmp]",
-            // pastikan dimensi genap & warna yuv420p (aman untuk libx264)
-            "[tmp]scale=trunc(iw/2)*2:trunc(ih/2)*2,format=yuv420p[vout]"
-        ]);
+       $filter = "[0:v][1:v]overlay="
+            . "(main_w-overlay_w)/2+100:"   // posisi X
+            . "main_h*0.78"                 // posisi Y
+            . "[vout]";
 
         // --- PATH ABSOLUT FFMPEG -------------------------------------------------
         $ffmpeg = env('FFMPEG_PATH', '/home/u882139623/bin/ffmpeg');
@@ -405,17 +399,23 @@ Terima kasih sudah bertahan sejauh ini. Langkah berikutnya milikmu sepenuhnya.',
         // --- CMD UTAMA -----------------------------------------------------------
         $cmd = [
             $ffmpeg, '-y',
-            '-i', $template,       // input video 1080x1920
-            '-i', $overlayPng,     // PNG 1026x105
+            '-i', $template,          // video mp4
+            '-i', $overlayPng,        // PNG 1026x105
             '-filter_complex', $filter,
-            '-map', '[vout]', '-map', '0:a?',      // video hasil filter + audio asal jika ada
-            '-c:v', 'libx264', '-preset', 'veryfast', '-crf', '23',
-            '-r', '30',                              // stabilkan fps
-            '-c:a', 'aac', '-b:a', '128k',           // encode audio (jangan copy)
+            '-map', '[vout]',         // ambil video hasil overlay
+            '-map', '0:a?',           // ambil audio dari input 0 kalau ada
+            '-c:v', 'libx264',
+            '-preset', 'veryfast',
+            '-crf', '23',
+            '-r', '30',               // stabilkan fps
+            '-c:a', 'aac',
+            '-b:a', '128k',
             '-movflags', '+faststart',
             '-shortest',
+            '-pix_fmt', 'yuv420p',    // jaga kompatibilitas player
             $output,
         ];
+
 
         // --- RUN -----------------------------------------------------------------
         $proc = new Process($cmd);
