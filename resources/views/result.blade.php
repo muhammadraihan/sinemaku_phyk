@@ -643,9 +643,9 @@
               allowOutsideClick: false,
               allowEscapeKey: false,
               showConfirmButton: false,
-              didOpen: () => {
-                  Swal.showLoading();
-              }
+              // didOpen: () => {
+              //     Swal.showLoading();
+              // }
           });
 
           $.ajax({
