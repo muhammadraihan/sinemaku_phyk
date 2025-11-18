@@ -13,10 +13,12 @@
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 
   <style>
+    html, body { height: 100%; }
     :root{
-      --brand-blue:#3B84AD;    /* judul */
-      --muted:#3B84AD;         /* paragraf */
-      --card-border:#99c8ef;   /* outline foto */
+      --brand-blue:#3B84AD;
+      --muted:#3B84AD;
+      --card-border:#99c8ef;
+      --footer-bg:#E9F5FF;
     }
 
     @font-face {
@@ -35,21 +37,18 @@
       overflow-x:hidden;
       opacity:0;
       animation: bodyFadeIn 0.9s ease-out forwards;
+      display:flex;
+  flex-direction:column;
+  min-height:100vh; /* penting */
     }
 
     @keyframes bodyFadeIn{
-      from{
-        opacity:0;
-        transform:translateY(8px);
-      }
-      to{
-        opacity:1;
-        transform:translateY(0);
-      }
+      from{ opacity:0; transform:translateY(8px);}
+      to{ opacity:1; transform:translateY(0);}
     }
 
     .hero{
-      min-height:auto;              /* biar konten tidak "ketarik" di HP */
+      min-height:auto;
       display:flex;
       align-items:center;
       padding-block: clamp(32px, 6vw, 80px) clamp(48px, 8vw, 100px);
@@ -61,7 +60,7 @@
       color:var(--brand-blue);
       line-height:1.05;
       letter-spacing:.3px;
-      font-size: clamp(28px, 4.5vw, 44px); /* fluid type */
+      font-size: clamp(28px, 4.5vw, 44px);
     }
 
     .subtitle{
@@ -76,20 +75,17 @@
     .subtitle.h2{ margin-left:0; font-size: clamp(22px, 3.5vw, 32px); }
 
     @keyframes subtitleIn{
-      to{
-        opacity:1;
-        transform:translateY(0);
-      }
+      to{ opacity:1; transform:translateY(0);}
     }
 
-    /* Kartu foto miring dengan outline biru lembut */
+    /* Area foto + logo produser */
     .photo-stack{
       position:relative;
       height:520px;
     }
 
     .main-image{
-      max-width: 680px;  /* batas desktop */
+      max-width: 680px;
       width: 100%;
       height: auto;
       object-fit: contain;
@@ -105,14 +101,26 @@
     }
 
     @keyframes heroImageIn{
-      0%{
-        opacity:0;
-        transform:translate3d(0, 26px, 0);
-      }
-      100%{
-        opacity:1;
-        transform:translate3d(0, 10px, 0);
-      }
+      0%{ opacity:0; transform:translate3d(0, 26px, 0);}
+      100%{ opacity:1; transform:translate3d(0, 10px, 0);}
+    }
+
+    /* Logo Sinemaku – ditempel di atas foto wanita (kiri) */
+    .sinemaku-logo{
+      position:absolute;
+      top:2px;
+      left:60px;
+      z-index:3;
+    }
+    .sinemaku-logo img{
+      width:100px;
+      max-width:20vw;
+      height:auto;
+      display:block;
+      margin:0;
+      border-radius:0;
+      box-shadow:none;
+      background:transparent;
     }
 
     /* Icon hati patah yang overlap di tengah */
@@ -131,23 +139,13 @@
     }
 
     @keyframes heartPop{
-      0%{
-        opacity:0;
-        transform:translateY(8px) rotate(-10deg) scale(0.6);
-      }
-      100%{
-        opacity:1;
-        transform:translateY(0) rotate(-6deg) scale(1);
-      }
+      0%{ opacity:0; transform:translateY(8px) rotate(-10deg) scale(0.6);}
+      100%{ opacity:1; transform:translateY(0) rotate(-6deg) scale(1);}
     }
 
     @keyframes heartBeat{
-      0%,100%{
-        transform:rotate(-6deg) scale(1);
-      }
-      50%{
-        transform:rotate(-5deg) scale(1.06);
-      }
+      0%,100%{ transform:rotate(-6deg) scale(1);}
+      50%{ transform:rotate(-5deg) scale(1.06);}
     }
 
     .lead-copy{
@@ -159,10 +157,7 @@
     }
 
     @keyframes textSoftIn{
-      to{
-        opacity:1;
-        transform:translateY(0);
-      }
+      to{ opacity:1; transform:translateY(0);}
     }
 
     .btn-primary{
@@ -183,7 +178,6 @@
       animation: ctaPulse 2.8s ease-in-out 1.2s infinite;
     }
 
-    /* pseudo-element lebih lebar dari tombol, jalan penuh kiri -> kanan */
     .btn-primary::before{
       content:"";
       position:absolute;
@@ -210,7 +204,6 @@
       box-shadow:0 16px 34px rgba(59,132,173,.45);
     }
 
-    /* saat hover, shine aktif dan bergerak penuh */
     .btn-primary:hover::before{
       opacity:1;
       animation: btnShine 0.9s ease-out forwards;
@@ -222,31 +215,15 @@
       animation:none;
     }
 
-    /* napas (pulse) skala & shadow tombol */
     @keyframes ctaPulse{
-      0%,100%{
-        transform:translateY(0) scale(1);
-        box-shadow:0 12px 26px rgba(59,132,173,.28);
-      }
-      50%{
-        transform:translateY(-1px) scale(1.015);
-        box-shadow:0 18px 40px rgba(59,132,173,.40);
-      }
+      0%,100%{ transform:translateY(0) scale(1); box-shadow:0 12px 26px rgba(59,132,173,.28);}
+      50%{ transform:translateY(-1px) scale(1.015); box-shadow:0 18px 40px rgba(59,132,173,.40);}
     }
 
-    /* animasi shine menyapu dari kiri ke kanan penuh */
     @keyframes btnShine{
-      0%{
-        transform:translateX(0);
-        opacity:0;
-      }
-      10%{
-        opacity:1;
-      }
-      100%{
-        transform:translateX(60%);
-        opacity:0;
-      }
+      0%{ transform:translateX(0); opacity:0;}
+      10%{ opacity:1;}
+      100%{ transform:translateX(60%); opacity:0;}
     }
 
     .hashtag{
@@ -256,7 +233,7 @@
     }
 
     .logo-img{
-      width: min(80vw, 500px);  /* 80% viewport di HP, max 500px di desktop */
+      width: min(80vw, 500px);
       height: auto;
       filter: drop-shadow(0 10px 20px rgba(0,0,0,0.25));
       opacity:0;
@@ -265,14 +242,8 @@
     }
 
     @keyframes logoReveal{
-      0%{
-        opacity:0;
-        transform:translateY(14px) scale(1.02);
-      }
-      100%{
-        opacity:1;
-        transform:translateY(0) scale(1);
-      }
+      0%{ opacity:0; transform:translateY(14px) scale(1.02);}
+      100%{ opacity:1; transform:translateY(0) scale(1);}
     }
 
     .hashtag-img{
@@ -284,21 +255,76 @@
     }
 
     @keyframes hashtagIn{
-      to{
-        opacity:1;
-        transform:translateY(0);
-      }
+      to{ opacity:1; transform:translateY(0);}
     }
 
-    /* Responsif */
+    /* Footer strip */
+    .phyk-footer{
+      background:var(--footer-bg);
+      padding:28px 16px 22px;
+      text-align:center;
+      flex-shrink:0;    /* cegah menyusut */
+  text-align:center;
+  margin-top:0;     /* pastikan tidak ada margin ekstra */
+    }
+    .phyk-footer-inner{
+      max-width:720px;
+      margin:0 auto;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      gap:6px;
+    }
+    .phyk-footer-top{
+      display:flex;
+      flex-wrap:wrap;
+      align-items:center;
+      justify-content:center;
+      gap:12px;
+      font-family:"caxton-lt-book", Georgia, "Times New Roman", serif;
+      color:var(--brand-blue);
+    }
+    .phyk-footer-top .footer-title{
+      height:32px;
+      display:flex;
+      align-items:center;
+    }
+    .phyk-footer-top .footer-title img{
+      height:62px;
+      width:auto;
+      display:block;
+      margin-top: 20px;
+    }
+    .phyk-footer-top .footer-text{
+      font-size:1.2rem;
+    }
+    .phyk-footer-top .footer-text strong{
+      font-weight:600;
+    }
+    .phyk-footer-hashtag img{
+      height:30px;
+      width:auto;
+      display:block;
+      margin-top: 25px;
+    }
+
     @media (min-width: 992px){
       .subtitle.h1{ margin-left: 170px; }
       .subtitle.h2{ margin-left: 120px; }
     }
 
+    @media (max-width: 576px){
+      .phyk-footer-top .footer-text{ font-size:.9rem;}
+      .phyk-footer-hashtag img{ height:22px;}
+    }
+
     @media (max-width: 375px){
       .btn-primary{ width:100%; }
     }
+    /* Bungkus konten utama agar tidak ‘makan’ footer */
+main.container.hero{
+  flex:1 0 auto; /* konten utama fleksibel */
+}
   </style>
 </head>
 <body>
@@ -306,14 +332,27 @@
   <main class="container hero">
     <div class="row align-items-center justify-content-between g-5">
 
-      {{-- Kolom kiri: tumpukan foto --}}
+      {{-- Kolom kiri: logo produser + tumpukan foto --}}
       <div class="col-12 col-lg-7 text-center mb-5 mb-lg-0">
-        <img 
-          src="{{ asset('img/hero.png') }}" 
-          alt="Patah Hati Image"
-          class="img-fluid main-image"
-          id="heroImage"
-        >
+        <div class="photo-stack">
+          {{-- Logo Sinemaku (placeholder, nanti diganti) --}}
+          <a href="https://yt3.googleusercontent.com/ytc/AIdro_kaTNs7REr-vqv3ITJOVmbMUE1_JQs7ih-mjpYQy05jKg=s900-c-k-c0x00ffffff-no-rj"
+             class="sinemaku-logo"
+             target="_blank"
+             rel="noopener"
+             aria-label="Sinemaku Pictures">
+            <img
+              src="https://yt3.googleusercontent.com/ytc/AIdro_kaTNs7REr-vqv3ITJOVmbMUE1_JQs7ih-mjpYQy05jKg=s900-c-k-c0x00ffffff-no-rj"
+              alt="Sinemaku Pictures">
+          </a>
+
+          <img 
+            src="{{ asset('img/hero.png') }}" 
+            alt="Patah Hati Image"
+            class="img-fluid main-image"
+            id="heroImage"
+          >
+        </div>
       </div>
 
       {{-- Kolom kanan: judul dan tombol --}}
@@ -347,6 +386,23 @@
     </div>
   </main>
 
+  {{-- Footer strip --}}
+  <footer class="phyk-footer">
+    <div class="phyk-footer-inner">
+      <div class="phyk-footer-top">
+        <div class="footer-title">
+          <img src="{{ asset('img/logo_phyk.png') }}" alt="Patah Hati yang Kupilih">
+        </div>
+        <div class="footer-text">
+          Di Bioskop <strong>24 Desember 2025</strong>
+        </div>
+      </div>
+      <div class="phyk-footer-hashtag">
+        <img src="{{ asset('img/hashtag.png') }}" alt="#BeraniMelepaskan">
+      </div>
+    </div>
+  </footer>
+
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
   <script>
@@ -358,7 +414,6 @@
       const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
       if(window.innerWidth < 992 || prefersReducedMotion){
-        // Jangan pakai efek parallax di mobile / user minta reduce motion
         img.style.transform = 'translate3d(0, 10px, 0)';
         return;
       }
@@ -374,7 +429,7 @@
       });
 
       window.addEventListener('mousemove', (e) => {
-        const maxMove = 10; // px, kecil supaya tetap subtle
+        const maxMove = 10;
         const relX = (e.clientX - centerX) / rect.width;
         const relY = (e.clientY - centerY) / rect.height;
 

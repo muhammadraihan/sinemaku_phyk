@@ -11,11 +11,13 @@
 
   {{-- Styles --}}
   <style>
+    html, body { height: 100%; }
     :root {
-      --brand-blue: #3B84AD;
-      --light-blue: #E9F5FF;
-      --text-muted: #486680;
-    }
+  --brand-blue: #3B84AD;
+  --light-blue: #E9F5FF;
+  --text-muted: #486680;
+  --footer-bg:#E9F5FF;
+}
 
     @font-face {
       font-family: 'caxton-lt-book';
@@ -26,27 +28,33 @@
     }
 
     body {
-      font-family: "Roboto", sans-serif;
-      background-color: #fff;
-      color: var(--text-muted);
-      text-align: center;
-      margin: 0;
-      padding: 40px 16px;
-      overflow-x:hidden;
-    }
+  font-family: "Roboto", sans-serif;
+  background-color: #fff;
+  color: var(--text-muted);
+  text-align: center;
+  margin: 0;
+  /* hapus padding horizontal di body agar footer biru edge-to-edge */
+  padding: 40px 0 0 0;
+  overflow-x:hidden;
+  display:flex;
+  flex-direction:column;
+  min-height:100vh;
+}
 
-    .result-container {
-      max-width: 680px;
-      margin: 0 auto;
-      opacity:0;
-      transform:translateY(12px);
-      transition: opacity .6s ease-out, transform .6s ease-out;
-    }
+    /* konten utama result */
+.result-container {
+  max-width: 680px;
+  margin: 0 auto 32px auto;
+  padding: 0 16px;          /* pindahkan padding ke sini */
+  opacity:0;
+  transform:translateY(12px);
+  transition: opacity .6s ease-out, transform .6s ease-out;
+}
 
-    .result-container.is-visible {
-      opacity:1;
-      transform:translateY(0);
-    }
+.result-container.is-visible {
+  opacity:1;
+  transform:translateY(0);
+}
 
     .greeting {
       font-family:"caxton-lt-book", Georgia, "Times New Roman", serif;
@@ -131,35 +139,14 @@
       position: relative;
       flex: 0 0 180px;
       aspect-ratio: 9/16;
-      /* background: url('{{ asset('img/video-thumb.png') }}') center/cover no-repeat; */
       border-radius: 10px;
       overflow:hidden;
-    }
-
-    .special-thumb::after {
-      position: absolute;
-      color: white;
-      font-size: 2rem;
-      left: 50%;
-      top: 50%;
-      transform: translate(-50%, -50%);
-      text-shadow: 0 3px 10px rgba(0,0,0,0.3);
-    }
-
-    .special-thumb::before{
-      content:"";
-      position:absolute;
-      inset:0;
-      background: radial-gradient(circle at 20% 0, rgba(255,255,255,.45), transparent 60%);
-      mix-blend-mode:soft-light;
-      opacity:0;
-      transition:opacity .3s ease-out;
     }
 
     .special-video {
       width: 100%;
       height: 100%;
-      object-fit: cover; /* penuh & ter-crop rapi */
+      object-fit: cover;
       display: block;
     }
 
@@ -178,6 +165,16 @@
       color: var(--brand-blue);
       font-size: 1.3rem;
       margin-bottom: 6px;
+    }
+
+    /* Copy promo film */
+    .promo-copy{
+      margin: 6px auto 15px auto;
+      max-width: 550px;
+      font-size: .90rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+      font-family:"caxton-lt-book", Georgia, "Times New Roman", serif;
     }
 
     /* Tombol */
@@ -237,13 +234,15 @@
       animation:none;
     }
 
-    .actions-row{
-      display:flex;
-      justify-content:center;
-      align-items:center;
-      gap:16px;
-      margin-top:8px;
-    }
+    /* jarak ekstra antara buttons dan footer */
+.actions-row{
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  gap:16px;
+  margin-top:8px;
+  margin-bottom:22px;        /* tambah jarak dari footer */
+}
 
     /* LOADING OVERLAY */
     .loading-overlay{
@@ -305,16 +304,15 @@
     }
 
     .share-modal{
-  background:#ffffff;
-  border-radius:18px;
-  padding:22px 20px 18px;
-  width:min(92vw, 380px);
-  box-shadow:0 22px 60px rgba(10,27,52,.38);
-  transform:translateY(12px) scale(.96);
-  opacity:0;
-  transition:opacity .22s ease-out, transform .22s ease-out;
-}
-
+      background:#ffffff;
+      border-radius:18px;
+      padding:22px 20px 18px;
+      width:min(92vw, 380px);
+      box-shadow:0 22px 60px rgba(10,27,52,.38);
+      transform:translateY(12px) scale(.96);
+      opacity:0;
+      transition:opacity .22s ease-out, transform .22s ease-out;
+    }
 
     .modal-backdrop.is-open .share-modal{
       opacity:1;
@@ -369,24 +367,6 @@
       color:var(--brand-blue);
     }
 
-    .share-option-label span{
-      display:block;
-      font-size:.86rem;
-      color:var(--text-muted);
-    }
-
-    .share-option:hover{
-      background:var(--light-blue);
-      border-color:#cfdff2;
-      transform:translateY(-1px);
-      box-shadow:0 10px 26px rgba(15,35,64,.18);
-    }
-
-    .share-option:active{
-      transform:translateY(0);
-      box-shadow:none;
-    }
-
     .share-option-icon{
       width:32px;
       height:32px;
@@ -424,13 +404,71 @@
         margin: 0 auto;
     }
 
-    @keyframes spin {
-        to {
-            transform: rotate(360deg);
-        }
+     /* Footer strip */
+     /* Footer strip – full width */
+.phyk-footer{
+  background:var(--footer-bg);
+  padding:28px 16px 22px;
+  text-align:center;
+  flex-shrink:0;
+  margin-top:0;
+}
+    .phyk-footer-inner{
+      max-width:720px;
+      margin:0 auto;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      gap:6px;
+    }
+    .phyk-footer-top{
+      display:flex;
+      flex-wrap:wrap;
+      align-items:center;
+      justify-content:center;
+      gap:12px;
+      font-family:"caxton-lt-book", Georgia, "Times New Roman", serif;
+      color:var(--brand-blue);
+    }
+    .phyk-footer-top .footer-title{
+      height:32px;
+      display:flex;
+      align-items:center;
+    }
+    .phyk-footer-top .footer-title img{
+      height:62px;
+      width:auto;
+      display:block;
+      margin-top: 20px;
+    }
+    .phyk-footer-top .footer-text{
+      font-size:1.2rem;
+    }
+    .phyk-footer-top .footer-text strong{
+      font-weight:600;
+    }
+    .phyk-footer-hashtag img{
+      height:30px;
+      width:auto;
+      display:block;
+      margin-top: 25px;
     }
 
-    @keyframes spin{ to{ transform:rotate(360deg); } }
+    @media (min-width: 992px){
+      .subtitle.h1{ margin-left: 170px; }
+      .subtitle.h2{ margin-left: 120px; }
+    }
+
+    @media (max-width: 576px){
+      .phyk-footer-top .footer-text{ font-size:.9rem;}
+      .phyk-footer-hashtag img{ height:22px;}
+    }
+ /* Bungkus konten utama agar tidak ‘makan’ footer */
+ main.container.hero{
+  flex:1 0 auto; /* konten utama fleksibel */
+}
+
+    @keyframes spin { to{ transform:rotate(360deg); } }
     @keyframes greetIn{ to{ opacity:1; transform:translateY(0); } }
     @keyframes phaseBoxIn{
       0%{ opacity:0; transform:translateY(10px) scale(.98); }
@@ -464,15 +502,15 @@
       .special-text { text-align: center; }
       .actions-row { flex-direction:column; }
       .share-modal{ width: min(92vw, 380px); }
+      .promo-copy{ font-size:.9rem; padding-inline:8px; }
     }
 
-    /* Responsive tweak for mobile view */
-@media (max-width: 420px) {
-  .share-modal{
-    width: min(96vw, 326px);
-    padding: 16px 6vw 12px;
-  }
-}
+    @media (max-width: 420px) {
+      .share-modal{
+        width: min(96vw, 326px);
+        padding: 16px 6vw 12px;
+      }
+    }
   </style>
 </head>
 <body>
@@ -487,20 +525,20 @@
   <!-- Modal Bagikan Hasil -->
   <div class="modal-backdrop" id="shareModal">
     <div class="share-modal">
-      <div class="share-modal-title">Bagikan hasil kamu</div>
+      <div class="share-modal-title">Bagikan hasil tes kamu</div>
       <div class="share-modal-sub">Pilih format yang mau kamu bagikan ke teman-teman.</div>
 
       <div class="share-modal-options">
         <button type="button" class="share-option" data-share="poster">
           <div class="share-option-label">
-            <strong>Bagikan Poster</strong>
+            <strong>Download Foto</strong>
           </div>
           <div class="share-option-icon">🖼</div>
         </button>
 
         <button type="button" class="share-option" data-share="video">
           <div class="share-option-label">
-            <strong>Bagikan Video</strong>
+            <strong>Download Video</strong>
           </div>
           <div class="share-option-icon">🎬</div>
         </button>
@@ -553,7 +591,6 @@
             Maaf, browser kamu tidak mendukung video tag.
           </video>
         @else
-          {{-- Fallback jika tidak ada video --}}
           <div class="no-video">Video belum tersedia untuk fase ini.</div>
         @endif
       </div>
@@ -563,15 +600,37 @@
       </div>
     </div>
 
+    {{-- Copy promo film --}}
+    <p class="promo-copy">
+      Saksikan kisah cinta Ben &amp; Alya hanya di bioskop mulai 24 Desember 2025.
+    </p>
+
     {{-- Buttons --}}
     <div class="actions-row">
       <a href="{{ route('home') }}" class="btn">Ulang Tes</a>
 
       <button type="button" class="btn" id="shareOpenBtn">
-        Bagikan Hasil
+        Download Hasil
       </button>
     </div>
   </div>
+
+  {{-- Footer strip --}}
+  <footer class="phyk-footer">
+    <div class="phyk-footer-inner">
+      <div class="phyk-footer-top">
+        <div class="footer-title">
+          <img src="{{ asset('img/logo_phyk.png') }}" alt="Patah Hati yang Kupilih">
+        </div>
+        <div class="footer-text">
+          Di Bioskop <strong>24 Desember 2025</strong>
+        </div>
+      </div>
+      <div class="phyk-footer-hashtag">
+        <img src="{{ asset('img/hashtag.png') }}" alt="#BeraniMelepaskan">
+      </div>
+    </div>
+  </footer>
 
   <script src="https://code.jquery.com/jquery-3.7.1.min.js"
           integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo="
@@ -580,7 +639,6 @@
   <script>
     var LOADING_DURATION = 2000;
 
-    // saat window selesai load
     $(window).on('load', function () {
       var $overlay = $('#loadingOverlay');
       var $result  = $('#resultContainer');
@@ -602,27 +660,23 @@
       function openModal()  { $modal.addClass('is-open'); }
       function closeModal() { $modal.removeClass('is-open'); }
 
-      // buka/tutup
       $openBtn.on('click', openModal);
       $closeBtn.on('click', closeModal);
 
-      // klik area gelap menutup modal
       $modal.on('click', function (e) {
         if ($(e.target).is($modal)) closeModal();
       });
 
-      // ESC untuk menutup
       $(document).on('keydown', function (e) {
         if (e.key === 'Escape') closeModal();
       });
 
-      // Aksi pilihan share
       $modal.find('.share-option').on('click', function () {
         var type = $(this).data('share');
 
         if (type === 'poster') {
           console.log('Bagikan Poster');
-          // TODO: logika share poster di sini
+          // TODO: logika share poster
         }
 
         if (type === 'video') {
@@ -643,9 +697,6 @@
               allowOutsideClick: false,
               allowEscapeKey: false,
               showConfirmButton: false,
-              // didOpen: () => {
-              //     Swal.showLoading();
-              // }
           });
 
           $.ajax({
@@ -659,24 +710,9 @@
             headers: {
               'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             },
-            xhrFields: { responseType: 'blob' } // penting agar terima blob
+            xhrFields: { responseType: 'blob' }
           })
-          // .done(function (blob) {
-          //   var url = window.URL.createObjectURL(blob);
-          //   var a   = document.createElement('a');
-          //   a.href = url;
-          //   a.download = 'hasil-kamu.mp4';
-          //   document.body.appendChild(a);
-          //   a.click();
-          //   a.remove();
-          //   window.URL.revokeObjectURL(url);
-          // })
-          // .fail(function () {
-          //   alert('Gagal membuat video');
-          // });
           .done(function (blob, status, xhr) {
-
-              // ambil nama file dari header kalau ada
               var filename = 'hasil-kamu.mp4';
               var disposition = xhr.getResponseHeader('Content-Disposition');
               if (disposition && disposition.indexOf('filename=') !== -1) {
@@ -686,7 +722,6 @@
                   }
               }
 
-              // 2) Buat URL blob dan trigger download
               var url = window.URL.createObjectURL(blob);
               var a   = document.createElement('a');
               a.href = url;
@@ -696,7 +731,6 @@
               a.remove();
               window.URL.revokeObjectURL(url);
 
-              // 3) Ganti popup jadi sukses
               Swal.fire({
                   icon: 'success',
                   title: 'Video siap di-download! 🎉',
@@ -706,12 +740,7 @@
           })
           .fail(function (xhr) {
               console.error(xhr);
-
               let msg = 'Gagal membuat video.';
-              // if (xhr && xhr.responseText) {
-              //     msg += '<br><small>' + $('<div>').text(xhr.responseText).html() + '</small>';
-              // }
-
               Swal.fire({
                   icon: 'error',
                   title: 'Oops...',
