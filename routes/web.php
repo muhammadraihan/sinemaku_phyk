@@ -29,3 +29,5 @@ Route::post('/form', [PsikotesController::class, 'store_form'])->name('store.for
 Route::get('/result', [PsikotesController::class, 'result'])->name('result');
 Route::post('/share/video', [PsikotesController::class, 'video'])
     ->name('share.video');
+Route::post('/share/poster', [PsikotesController::class, 'poster'])
+    ->name('share.poster');
