@@ -414,6 +414,22 @@
       padding:6px 10px;
     }
 
+    .swal-spinner {
+        width: 40px;
+        height: 40px;
+        border-radius: 999px;
+        border: 4px solid #e5e5e5;
+        border-top-color: #3085d6;
+        animation: spin 0.8s linear infinite;
+        margin: 0 auto;
+    }
+
+    @keyframes spin {
+        to {
+            transform: rotate(360deg);
+        }
+    }
+
     @keyframes spin{ to{ transform:rotate(360deg); } }
     @keyframes greetIn{ to{ opacity:1; transform:translateY(0); } }
     @keyframes phaseBoxIn{
@@ -560,6 +576,7 @@
   <script src="https://code.jquery.com/jquery-3.7.1.min.js"
           integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo="
           crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script>
     var LOADING_DURATION = 2000;
 
@@ -615,6 +632,22 @@
           var dominant = "{{ $dominant }}";
           var video = "{{ $video }}";
 
+          Swal.fire({
+              title: 'Sedang menyiapkan video...',
+              html: `
+                  <div class="swal-spinner"></div>
+                  <p style="margin-top:12px;font-size:14px;">
+                      Mohon tunggu sebentar, kami sedang membuat video hasil psikotes kamu.
+                  </p>
+              `,
+              allowOutsideClick: false,
+              allowEscapeKey: false,
+              showConfirmButton: false,
+              didOpen: () => {
+                  Swal.showLoading();
+              }
+          });
+
           $.ajax({
             url: "{{ route('share.video') }}",
             method: "POST",
@@ -628,18 +661,62 @@
             },
             xhrFields: { responseType: 'blob' } // penting agar terima blob
           })
-          .done(function (blob) {
-            var url = window.URL.createObjectURL(blob);
-            var a   = document.createElement('a');
-            a.href = url;
-            a.download = 'hasil-kamu.mp4';
-            document.body.appendChild(a);
-            a.click();
-            a.remove();
-            window.URL.revokeObjectURL(url);
+          // .done(function (blob) {
+          //   var url = window.URL.createObjectURL(blob);
+          //   var a   = document.createElement('a');
+          //   a.href = url;
+          //   a.download = 'hasil-kamu.mp4';
+          //   document.body.appendChild(a);
+          //   a.click();
+          //   a.remove();
+          //   window.URL.revokeObjectURL(url);
+          // })
+          // .fail(function () {
+          //   alert('Gagal membuat video');
+          // });
+          .done(function (blob, status, xhr) {
+
+              // ambil nama file dari header kalau ada
+              var filename = 'hasil-kamu.mp4';
+              var disposition = xhr.getResponseHeader('Content-Disposition');
+              if (disposition && disposition.indexOf('filename=') !== -1) {
+                  var matches = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/.exec(disposition);
+                  if (matches != null && matches[1]) {
+                      filename = matches[1].replace(/['"]/g, '');
+                  }
+              }
+
+              // 2) Buat URL blob dan trigger download
+              var url = window.URL.createObjectURL(blob);
+              var a   = document.createElement('a');
+              a.href = url;
+              a.download = filename;
+              document.body.appendChild(a);
+              a.click();
+              a.remove();
+              window.URL.revokeObjectURL(url);
+
+              // 3) Ganti popup jadi sukses
+              Swal.fire({
+                  icon: 'success',
+                  title: 'Video siap di-download! 🎉',
+                  html: 'Silakan cek hasil unduhan di perangkat kamu.',
+                  confirmButtonText: 'Oke'
+              });
           })
-          .fail(function () {
-            alert('Gagal membuat video');
+          .fail(function (xhr) {
+              console.error(xhr);
+
+              let msg = 'Gagal membuat video.';
+              // if (xhr && xhr.responseText) {
+              //     msg += '<br><small>' + $('<div>').text(xhr.responseText).html() + '</small>';
+              // }
+
+              Swal.fire({
+                  icon: 'error',
+                  title: 'Oops...',
+                  html: msg
+              });
           });
         }
 
