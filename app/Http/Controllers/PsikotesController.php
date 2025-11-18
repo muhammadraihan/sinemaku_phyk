@@ -383,9 +383,39 @@ Terima kasih sudah bertahan sejauh ini. Langkah berikutnya milikmu sepenuhnya.',
         abort_if(!file_exists($template), 404, "Template video tidak ditemukan: {$template}");
         abort_if(!file_exists($overlayPng), 500, "Overlay PNG tidak ditemukan: {$overlayPng}");
 
+        $fontPath = public_path('fonts/caxton-lt-book.TTF');
+        if (!file_exists($fontPath)) {
+            abort(500, "Font untuk drawtext tidak ditemukan: {$fontPath}");
+        }
+
+        // Sanitasi text utk ffmpeg (hindari karakter aneh dulu)
+        $rawText  = $name ?: 'Kamu';
+        $safeText = preg_replace('/[^A-Za-z0-9 ]/u', '', $rawText); // huruf/angka/spasi saja
+        if ($safeText === '') {
+            $safeText = 'Kamu';
+        }
+        // ffmpeg butuh spasi di-escape supaya tidak bentrok dengan parser
+        $ffText = str_replace(' ', '\ ', $safeText);
+
+
         // --- FILTER: posisi & delay 5 detik -------------------------------------
         // Catatan: Process TIDAK via shell, jadi string ini dikirim utuh ke ffmpeg.
-       $filter = '[1:v]scale=400:-2[ov];[0:v][ov]overlay=10:10[vout]';
+       $filterParts = [
+            '[1:v]scale=400:-2[ov]',
+            '[0:v][ov]overlay=10:10[base]',
+            " [base]drawtext=fontfile={$fontPath}"
+            . ":text={$ffText}"
+            . ":fontsize=54"
+            . ":fontcolor=white"
+            . ":bordercolor=black"
+            . ":borderw=3"
+            . ":x=(w-text_w)/2"
+            . ":y=h*0.80"
+            . ":enable='gte(t,5)'"
+            . "[vout]",
+
+        ];
+        $filter = implode(';', $filterParts);
 
         // --- PATH ABSOLUT FFMPEG -------------------------------------------------
         $ffmpeg = env('FFMPEG_PATH', '/home/u882139623/bin/ffmpeg');
