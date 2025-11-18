@@ -386,14 +386,13 @@ Terima kasih sudah bertahan sejauh ini. Langkah berikutnya milikmu sepenuhnya.',
         // --- FILTER: posisi & delay 5 detik -------------------------------------
         // Catatan: Process TIDAK via shell, jadi string ini dikirim utuh ke ffmpeg.
        $filter = implode(';', [
+            // siapkan overlay: RGBA + delay 5 detik
+            '[1:v]format=rgba,setpts=PTS+5/TB[ov]',
+            // siapkan base video: RGBA
             '[0:v]format=rgba[base]',
-            '[1:v]format=rgba[ov]',
-            // overlay seperti biasa
-            "[base][ov]overlay="
-            ."x='floor((main_w-overlay_w)/2+100)'"
-            .":y='floor(main_h*0.78)'"
-            .":enable='gte(t,5)'[tmp]",
-            // paksa kelipatan 2
+            // tempel overlay (paksa koordinat integer)
+            "[base][ov]overlay=x=floor((W-w)/2+100):y=floor(H*0.78)[tmp]",
+            // pastikan dimensi genap & warna yuv420p (aman untuk libx264)
             "[tmp]scale=trunc(iw/2)*2:trunc(ih/2)*2,format=yuv420p[vout]"
         ]);
 
@@ -406,17 +405,15 @@ Terima kasih sudah bertahan sejauh ini. Langkah berikutnya milikmu sepenuhnya.',
         // --- CMD UTAMA -----------------------------------------------------------
         $cmd = [
             $ffmpeg, '-y',
-            '-i', $template,
-            '-i', $overlayPng,
+            '-i', $template,       // input video 1080x1920
+            '-i', $overlayPng,     // PNG 1026x105
             '-filter_complex', $filter,
-            '-map', '[vout]', '-map', '0:a?',      // pakai video hasil filter + audio asal jika ada
+            '-map', '[vout]', '-map', '0:a?',      // video hasil filter + audio asal jika ada
             '-c:v', 'libx264', '-preset', 'veryfast', '-crf', '23',
-            '-r', '30',                            // paksa fps stabil
-            // jangan copy audio; encode aac biar kompatibel
-            '-c:a', 'aac', '-b:a', '128k',
-            '-movflags', '+faststart',             // cepat mulai saat streaming
-            '-shortest',                           // akhiri mengikuti durasi terpendek
-            '-pix_fmt', 'yuv420p',                 // jaga kompatibilitas
+            '-r', '30',                              // stabilkan fps
+            '-c:a', 'aac', '-b:a', '128k',           // encode audio (jangan copy)
+            '-movflags', '+faststart',
+            '-shortest',
             $output,
         ];
 
