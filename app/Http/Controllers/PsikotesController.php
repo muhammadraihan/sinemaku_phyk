@@ -438,7 +438,8 @@ Terima kasih sudah bertahan sejauh ini. Langkah berikutnya milikmu sepenuhnya.',
 
         // --- FILTER: posisi & delay 5 detik -------------------------------------
         // Catatan: Process TIDAK via shell, jadi string ini dikirim utuh ke ffmpeg.
-       $filter = '[1:v]scale=1026:105[ov];[0:v][ov]overlay=(main_w-1026)/2:main_h-105-80[vout]';
+    //    $filter = '[1:v]scale=1026:105[ov];[0:v][ov]overlay=(main_w-1026)/2:main_h-105-80[vout]';
+        $filter = "[0:v][1:v]overlay=x=(main_w-overlay_w)/2+100:y=main_h*0.78:enable='gte(t,5)'[vout]";
 
         // --- PATH ABSOLUT FFMPEG -------------------------------------------------
         $ffmpeg = env('FFMPEG_PATH', '/home/u882139623/bin/ffmpeg');
