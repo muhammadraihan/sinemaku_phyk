@@ -796,59 +796,117 @@
               showConfirmButton: false,
           });
 
-          $.ajax({
-            url: "{{ route('share.video') }}",
-            method: "POST",
-            data: { 
-              name: name ,
-              phase: dominant,
-              video: video
-            },
-            headers: {
-              'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-            },
-            xhrFields: { responseType: 'blob' }
-          })
-          .done(function (blob, status, xhr) {
-              var filename = 'hasil-kamu.mp4';
-              var disposition = xhr.getResponseHeader('Content-Disposition');
-              if (disposition && disposition.indexOf('filename=') !== -1) {
-                  var matches = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/.exec(disposition);
-                  if (matches != null && matches[1]) {
-                      filename = matches[1].replace(/['"]/g, '');
-                  }
-              }
+          // ==== SAFARI: pakai form POST biasa (tanpa XHR/blob) ====
+          if (isSafari()) {
+              console.log('Safari detected: using form POST fallback');
 
-              var url = window.URL.createObjectURL(blob);
-              var a   = document.createElement('a');
-              a.href = url;
-              a.download = filename;
-              document.body.appendChild(a);
-              a.click();
-              a.remove();
-              window.URL.revokeObjectURL(url);
+              // bikin form sementara
+              var form = document.createElement('form');
+              form.method = 'POST';
+              form.action = "{{ route('share.video') }}";
+              form.target = '_blank'; // download di tab baru (biar halaman utama tetap)
 
+              // CSRF
+              var csrf = document.createElement('input');
+              csrf.type  = 'hidden';
+              csrf.name  = '_token';
+              csrf.value = $('meta[name="csrf-token"]').attr('content');
+              form.appendChild(csrf);
+
+              // name
+              var inputName = document.createElement('input');
+              inputName.type  = 'hidden';
+              inputName.name  = 'name';
+              inputName.value = name;
+              form.appendChild(inputName);
+
+              // phase
+              var inputPhase = document.createElement('input');
+              inputPhase.type  = 'hidden';
+              inputPhase.name  = 'phase';
+              inputPhase.value = dominant;
+              form.appendChild(inputPhase);
+
+              // video
+              var inputVideo = document.createElement('input');
+              inputVideo.type  = 'hidden';
+              inputVideo.name  = 'video';
+              inputVideo.value = video;
+              form.appendChild(inputVideo);
+
+              document.body.appendChild(form);
+              form.submit();
+              form.remove();
+
+              // tutup loading, kasih info singkat
               Swal.fire({
-                  icon: 'success',
-                  title: 'Video siap di-download! 🎉',
-                  html: 'Silakan cek hasil unduhan di perangkat kamu.',
+                  icon: 'info',
+                  title: 'Video sedang di-download',
+                  html: 'Jika belum muncul, cek tab baru atau download popup dari Safari.',
                   confirmButtonText: 'Oke'
               });
-          })
-          .fail(function (xhr) {
-              console.error(xhr);
-              let msg = 'Gagal membuat video.';
-              Swal.fire({
-                  icon: 'error',
-                  title: 'Oops...',
-                  html: msg
-              });
-          });
+
+              return;
+          }else{
+            $.ajax({
+              url: "{{ route('share.video') }}",
+              method: "POST",
+              data: { 
+                name: name ,
+                phase: dominant,
+                video: video
+              },
+              headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+              },
+              xhrFields: { responseType: 'blob' }
+            })
+            .done(function (blob, status, xhr) {
+                var filename = 'hasil-kamu.mp4';
+                var disposition = xhr.getResponseHeader('Content-Disposition');
+                if (disposition && disposition.indexOf('filename=') !== -1) {
+                    var matches = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/.exec(disposition);
+                    if (matches != null && matches[1]) {
+                        filename = matches[1].replace(/['"]/g, '');
+                    }
+                }
+
+                var url = window.URL.createObjectURL(blob);
+                var a   = document.createElement('a');
+                a.href = url;
+                a.download = filename;
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+                window.URL.revokeObjectURL(url);
+
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Video siap di-download! 🎉',
+                    html: 'Silakan cek hasil unduhan di perangkat kamu.',
+                    confirmButtonText: 'Oke'
+                });
+            })
+            .fail(function (xhr) {
+                console.error(xhr);
+                let msg = 'Gagal membuat video.';
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    html: msg
+                });
+            });
+          }
         }
 
         closeModal();
       });
     })();
+
+    function isSafari() {
+        return /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+    }
+
   </script>
 </body>
 </html>
