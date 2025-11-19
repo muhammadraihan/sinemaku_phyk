@@ -656,7 +656,7 @@ Terima kasih sudah bertahan sejauh ini. Langkah berikutnya milikmu sepenuhnya.',
         $x = $bannerLeft + ($bannerWidth - $textW) / 2 - $bbox[0];
 
         // Y boleh pakai yang lama (kalau sudah pas)
-        $bannerCenterY = 260;                    // kalau mau bisa di-tweak 250–265
+        $bannerCenterY = 200;                    // kalau mau bisa di-tweak 250–265
         $y = $bannerCenterY + $textH / 2;
 
 
