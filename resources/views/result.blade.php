@@ -796,107 +796,73 @@
               showConfirmButton: false,
           });
 
-          // ==== SAFARI: pakai form POST biasa (tanpa XHR/blob) ====
-          if (isSafari()) {
-              console.log('Safari detected: using form POST fallback');
+          console.log('Bagikan Video');
 
-              // bikin form sementara
-              var form = document.createElement('form');
-              form.method = 'POST';
-              form.action = "{{ route('share.video') }}";
-              form.target = '_blank'; // download di tab baru (biar halaman utama tetap)
+          var name     = "{{ \Illuminate\Support\Str::title($name ?? session('quiz_name')) }}";
+          var dominant = "{{ $dominant }}";
+          var video    = "{{ $video }}";
 
-              // CSRF
-              var csrf = document.createElement('input');
-              csrf.type  = 'hidden';
-              csrf.name  = '_token';
-              csrf.value = $('meta[name="csrf-token"]').attr('content');
-              form.appendChild(csrf);
+          Swal.fire({
+              title: 'Sedang menyiapkan video...',
+              html: `
+                  <div class="swal-spinner"></div>
+                  <p style="margin-top:12px;font-size:14px;">
+                      Mohon tunggu sebentar, kami sedang membuat video hasil psikotes kamu.
+                  </p>
+              `,
+              allowOutsideClick: false,
+              allowEscapeKey: false,
+              showConfirmButton: false,
+              didOpen: () => {
+                  Swal.showLoading();
+              }
+          });
 
-              // name
-              var inputName = document.createElement('input');
-              inputName.type  = 'hidden';
-              inputName.name  = 'name';
-              inputName.value = name;
-              form.appendChild(inputName);
+          // --- Kirim lewat form POST biasa (tanpa AJAX) ---
+          var form = document.createElement('form');
+          form.method = 'POST';
+          form.action = "{{ route('share.video') }}";
+          form.target = '_blank'; // buka di tab baru, biar halaman result tetap
 
-              // phase
-              var inputPhase = document.createElement('input');
-              inputPhase.type  = 'hidden';
-              inputPhase.name  = 'phase';
-              inputPhase.value = dominant;
-              form.appendChild(inputPhase);
+          // CSRF
+          var csrf = document.createElement('input');
+          csrf.type  = 'hidden';
+          csrf.name  = '_token';
+          csrf.value = $('meta[name="csrf-token"]').attr('content');
+          form.appendChild(csrf);
 
-              // video
-              var inputVideo = document.createElement('input');
-              inputVideo.type  = 'hidden';
-              inputVideo.name  = 'video';
-              inputVideo.value = video;
-              form.appendChild(inputVideo);
+          // name
+          var inputName = document.createElement('input');
+          inputName.type  = 'hidden';
+          inputName.name  = 'name';
+          inputName.value = name;
+          form.appendChild(inputName);
 
-              document.body.appendChild(form);
-              form.submit();
-              form.remove();
+          // phase
+          var inputPhase = document.createElement('input');
+          inputPhase.type  = 'hidden';
+          inputPhase.name  = 'phase';
+          inputPhase.value = dominant;
+          form.appendChild(inputPhase);
 
-              // tutup loading, kasih info singkat
-              Swal.fire({
-                  icon: 'info',
-                  title: 'Video sedang di-download',
-                  html: 'Jika belum muncul, cek tab baru atau download popup dari Safari.',
-                  confirmButtonText: 'Oke'
-              });
+          // video
+          var inputVideo = document.createElement('input');
+          inputVideo.type  = 'hidden';
+          inputVideo.name  = 'video';
+          inputVideo.value = video;
+          form.appendChild(inputVideo);
 
-              return;
-          }else{
-            $.ajax({
-              url: "{{ route('share.video') }}",
-              method: "POST",
-              data: { 
-                name: name ,
-                phase: dominant,
-                video: video
-              },
-              headers: {
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-              },
-              xhrFields: { responseType: 'blob' }
-            })
-            .done(function (blob, status, xhr) {
-                var filename = 'hasil-kamu.mp4';
-                var disposition = xhr.getResponseHeader('Content-Disposition');
-                if (disposition && disposition.indexOf('filename=') !== -1) {
-                    var matches = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/.exec(disposition);
-                    if (matches != null && matches[1]) {
-                        filename = matches[1].replace(/['"]/g, '');
-                    }
-                }
+          document.body.appendChild(form);
+          form.submit();
+          form.remove();
 
-                var url = window.URL.createObjectURL(blob);
-                var a   = document.createElement('a');
-                a.href = url;
-                a.download = filename;
-                document.body.appendChild(a);
-                a.click();
-                a.remove();
-                window.URL.revokeObjectURL(url);
-
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Video siap di-download! 🎉',
-                    html: 'Silakan cek hasil unduhan di perangkat kamu.',
-                    confirmButtonText: 'Oke'
-                });
-            })
-            .fail(function (xhr) {
-                console.error(xhr);
-                let msg = 'Gagal membuat video.';
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Oops...',
-                    html: msg
-                });
-            });
-          }
+          // Setelah submit, kita ganti popup supaya user nggak bingung
+          Swal.fire({
+              icon: 'info',
+              title: 'Video sedang di-download',
+              html: 'Jika belum muncul, cek tab baru atau prompt download dari browser kamu.',
+              confirmButtonText: 'Oke'
+          });
         }
 
         closeModal();
