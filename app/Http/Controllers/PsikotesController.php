@@ -9,6 +9,7 @@ use Illuminate\Support\Str;
 use Intervention\Image\ImageManagerStatic as Image;
 use Symfony\Component\Process\Process;
 use Illuminate\Support\Facades\DB;
+use Webpatser\Uuid\Uuid;
 
 class PsikotesController extends Controller
 {
@@ -171,6 +172,7 @@ class PsikotesController extends Controller
 
         if (! app()->environment('local')) {
             DB::table('phyks')->insert([
+                'uuid'  => Uuid::generate(),
                 'name'  => $request->name,
                 'email' => $request->email,
             ]);
