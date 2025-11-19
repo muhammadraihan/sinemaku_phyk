@@ -813,9 +813,9 @@
               allowOutsideClick: false,
               allowEscapeKey: false,
               showConfirmButton: false,
-              didOpen: () => {
-                  Swal.showLoading();
-              }
+              // didOpen: () => {
+              //     Swal.showLoading();
+              // }
           });
 
           // --- Kirim lewat form POST biasa (tanpa AJAX) ---
