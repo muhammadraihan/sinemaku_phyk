@@ -175,6 +175,7 @@ class PsikotesController extends Controller
                 'uuid'  => Uuid::generate(),
                 'name'  => $request->name,
                 'email' => $request->email,
+                'created_at' => now()
             ]);
         }
 
