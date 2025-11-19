@@ -683,7 +683,81 @@
 
         if (type === 'poster') {
           console.log('Bagikan Poster');
-          // TODO: logika share poster
+
+          var name     = "{{ \Illuminate\Support\Str::title($name ?? session('quiz_name')) }}";
+          var dominant = "{{ $dominant }}"; // fase (ACCEPTANCE, DENIAL, dll)
+
+          Swal.fire({
+              title: 'Sedang menyiapkan poster...',
+              html: `
+                  <div class="swal-spinner"></div>
+                  <p style="margin-top:12px;font-size:14px;">
+                      Mohon tunggu sebentar, kami sedang membuat poster fase kamu.
+                  </p>
+              `,
+              allowOutsideClick: false,
+              allowEscapeKey: false,
+              showConfirmButton: false,
+              // didOpen: () => {
+              //     Swal.showLoading();
+              // }
+          });
+
+          $.ajax({
+              url: "{{ route('share.poster') }}",
+              method: "POST",
+              data: {
+                  name:  name,
+                  phase: dominant
+              },
+              headers: {
+                  'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+              },
+              xhrFields: {
+                  responseType: 'blob'
+              }
+          })
+          .done(function (blob, status, xhr) {
+              var filename    = 'poster-' + dominant.toLowerCase() + '.jpg';
+              var disposition = xhr.getResponseHeader('Content-Disposition');
+
+              if (disposition && disposition.indexOf('filename=') !== -1) {
+                  var matches = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/.exec(disposition);
+                  if (matches != null && matches[1]) {
+                      filename = matches[1].replace(/['"]/g, '');
+                  }
+              }
+
+              var url = window.URL.createObjectURL(blob);
+              var a   = document.createElement('a');
+              a.href = url;
+              a.download = filename;
+              document.body.appendChild(a);
+              a.click();
+              a.remove();
+              window.URL.revokeObjectURL(url);
+
+              Swal.fire({
+                  icon: 'success',
+                  title: 'Poster siap di-download! 🎉',
+                  html: 'Silakan cek hasil unduhan di perangkat kamu.',
+                  confirmButtonText: 'Oke'
+              });
+          })
+          .fail(function (xhr) {
+              console.error(xhr);
+
+              let msg = 'Gagal membuat poster.';
+              // if (xhr && xhr.responseText) {
+              //     msg += '<br><small>' + $('<div>').text(xhr.responseText).html() + '</small>';
+              // }
+
+              Swal.fire({
+                  icon: 'error',
+                  title: 'Oops...',
+                  html: msg
+              });
+          });
         }
 
         if (type === 'video') {
