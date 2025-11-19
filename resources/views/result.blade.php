@@ -149,8 +149,12 @@
     .special-video {
       width: 100%;
       height: 100%;
-      object-fit: cover;
+      object-fit: contain;
       display: block;
+    }
+
+    .special-video::-webkit-media-controls-fullscreen-button {
+        display: none !important;
     }
 
     .special-box:hover .special-thumb::before{
@@ -587,7 +591,7 @@
     <div class="special-box">
       <div class="special-thumb">
         @if(!empty($video))
-          <video class="special-video"
+          {{-- <video class="special-video"
                 src="{{ $video }}"
                 playsinline
                 autoplay
@@ -596,7 +600,19 @@
                 controlsList="nodownload noplaybackrate nofullscreen"
                 disablepictureinpicture>
             Maaf, browser kamu tidak mendukung video tag.
+          </video> --}}
+          <video class="special-video"
+                src="{{ $video }}"
+                playsinline
+                webkit-playsinline
+                autoplay
+                muted
+                loop
+                controls
+                controlsList="nodownload noplaybackrate nofullscreen"
+                disablepictureinpicture>
           </video>
+
         @else
           <div class="no-video">Video belum tersedia untuk fase ini.</div>
         @endif
