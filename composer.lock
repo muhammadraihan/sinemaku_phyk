@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "264027b6b853b960ddda4dbaae2718fc",
+    "content-hash": "9e2b7c98b75bc7743f437a4b9d8fe994",
     "packages": [
         {
             "name": "brick/math",
@@ -5764,20 +5764,20 @@
         },
         {
             "name": "webpatser/laravel-uuid",
-            "version": "v5.0.1",
+            "version": "v5.1.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/webpatser/laravel-uuid.git",
-                "reference": "20658e2629f1dc75528c112a58bcab3f8409a78c"
+                "reference": "b2fa1129e206e155af2669c6713613159578bf5e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/webpatser/laravel-uuid/zipball/20658e2629f1dc75528c112a58bcab3f8409a78c",
-                "reference": "20658e2629f1dc75528c112a58bcab3f8409a78c",
+                "url": "https://api.github.com/repos/webpatser/laravel-uuid/zipball/b2fa1129e206e155af2669c6713613159578bf5e",
+                "reference": "b2fa1129e206e155af2669c6713613159578bf5e",
                 "shasum": ""
             },
             "require": {
-                "php": "^8.0"
+                "php": "^8.2"
             },
             "require-dev": {
                 "fakerphp/faker": "^1.24",
@@ -5818,7 +5818,7 @@
                 "issues": "https://github.com/webpatser/laravel-uuid/issues",
                 "source": "https://github.com/webpatser/laravel-uuid"
             },
-            "time": "2025-09-10T13:21:20+00:00"
+            "time": "2025-09-10T13:29:00+00:00"
         }
     ],
     "packages-dev": [
@@ -8386,12 +8386,12 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {},
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
         "php": "^8.1"
     },
-    "platform-dev": [],
-    "plugin-api-version": "2.3.0"
+    "platform-dev": {},
+    "plugin-api-version": "2.6.0"
 }
