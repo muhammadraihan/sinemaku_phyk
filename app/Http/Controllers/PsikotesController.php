@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
 use Intervention\Image\ImageManagerStatic as Image;
 use Symfony\Component\Process\Process;
+use Illuminate\Support\Facades\DB;
 
 class PsikotesController extends Controller
 {
@@ -167,6 +168,13 @@ class PsikotesController extends Controller
                 'email' => 'Email',
             ]
         );
+
+        if (! app()->environment('local')) {
+            DB::table('phyks')->insert([
+                'name'  => $request->name,
+                'email' => $request->email,
+            ]);
+        }
 
         session(['quiz_name' => $request->name]);
         return redirect()->route('quiz.start');
