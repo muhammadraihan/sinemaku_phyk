@@ -411,13 +411,13 @@
 
         <a href="{{ route('form') }}" class="btn btn-primary btn-lg">Mulai Tes</a>
 
-        <div class="mt-4">
+        {{-- <div class="mt-4">
           <img 
             src="{{ asset('img/hashtag.png') }}" 
             alt="Hashtag"
             class="hashtag-img"
           >
-        </div>
+        </div> --}}
       </div>
     </div>
   </main>

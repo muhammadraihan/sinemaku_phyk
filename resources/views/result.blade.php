@@ -575,13 +575,13 @@
     </div>
 
     {{-- Hashtag sebagai gambar --}}
-    <div class="hashtag-wrap">
+    {{-- <div class="hashtag-wrap">
       <img 
         src="{{ asset('img/hashtag.png') }}" 
         alt="#BeraniMelepaskan"
         class="hashtag-img"
       >
-    </div>
+    </div> --}}
 
     {{-- Pesan Spesial --}}
     <div class="special-box">

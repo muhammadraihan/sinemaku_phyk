@@ -14,83 +14,83 @@ class PsikotesController extends Controller
     private $questions = [
         [
             'text' => 'Saat hubunganmu berakhir, apa hal pertama yang kamu rasakan?',
-            'a' => 'Nggak mungkin. ini cuma salah paham.',
+            'a' => 'Nggak mungkin. ini cuma salah paham',
             'b' => 'Kenapa dia tega banget sama aku?!',
-            'c' => 'Kalah aku berubah, mungkin dia bakal balik.',
+            'c' => 'Kalau aku berubah, mungkin dia bakal balik',
             'd' => 'Kayanya aku ngga akan bisa bahagia lagi',
-            'e' => 'Mungkin ini memang jalan terbaik.'
+            'e' => 'Mungkin ini memang jalan terbaik'
         ],
         [
             'text' => 'Ketika temanmu menasehati untuk "move on", kamu...',
-            'a' => 'Aku ngga butuh nasihat, aku cuma pengen dia balik.',
-            'b' => 'Mereka ngga ngerti sakitnya aku.',
-            'c' => 'Oke, aku coba tapi tolong bantu aku buat hubungin dia sekali lagi.',
-            'd' => 'Move on tuh susah, aku capek nangis.',
+            'a' => 'Aku ngga butuh nasihat, aku cuma pengen dia balik',
+            'b' => 'Mereka ngga ngerti sakitnya aku',
+            'c' => 'Oke, aku coba tapi tolong bantu aku buat hubungin dia sekali lagi',
+            'd' => 'Move on tuh susah, aku capek nangis',
             'e' => 'Aku tahu ini proses, pelan-pelan saja'
         ],
         [
             'text' => 'Apa yang paling sering kamu lakukan belakangan ini?',
-            'a' => 'Menunggu pesan darinya.',
-            'b' => 'Menghapus semua foto sambil nangis marah.',
-            'c' => 'Menulis chat panjang tapi ngga pernah dikirim.',
-            'd' => 'Mendengarkan lagu sedih tiap malam.',
+            'a' => 'Menunggu pesan darinya',
+            'b' => 'Menghapus semua foto sambil nangis marah',
+            'c' => 'Menulis chat panjang tapi ngga pernah dikirim',
+            'd' => 'Mendengarkan lagu sedih tiap malam',
             'e' => 'Menata hidup lagi dan fokus ke diri sendiri'
         ],
         [
             'text' => 'Kalau lihat dia dengan orang baru, kamu...',
-            'a' => 'Pura-pura ngga lihat.',
-            'b' => 'Langsung kesal dan ingin konfrontasi.',
+            'a' => 'Pura-pura ngga lihat',
+            'b' => 'Langsung kesal dan ingin konfrontasi',
             'c' => 'Berpikir, "Mungkin aku masih punya kesempatan."',
-            'd' => 'Ngga bisa berhenti membandingkan diri.',
-            'e' => 'Ikhlas, meski masih sedikit perih.'
+            'd' => 'Ngga bisa berhenti membandingkan diri',
+            'e' => 'Ikhlas, meski masih sedikit perih'
         ],
         [
             'text' => 'Kalimat mana yang paling menggambarkan isi hatimu sekarang?',
             'a' => 'Ini cuma mimpi buruk, kan?',
             'b' => 'Kenapa harus aku yang ditinggal?',
             'c' => 'Tuhan, kalau aku sabar, apa dia balik?',
-            'd' => 'Aku udah ngga punya semangat.',
-            'e' => 'Aku masih sedih, tapi aku percaya akan baik-baik aja.'
+            'd' => 'Aku udah ngga punya semangat',
+            'e' => 'Aku masih sedih, tapi aku percaya akan baik-baik aja'
         ],
         [
             'text' => 'Saat mengingat kenangan bersamanya, kamu...',
-            'a' => 'Menolak memikirkan itu, karena terlalu sakit.',
-            'b' => 'Marah karena merasa dibohongi.',
-            'c' => 'Berandai-andai bisa memperbaiki semuanya.',
-            'd' => 'Menangis tanpa alasan jelas.',
-            'e' => 'Tersenyum, tanda kamu sudah berdamai.'
+            'a' => 'Menolak memikirkan itu, karena terlalu sakit',
+            'b' => 'Marah karena merasa dibohongi',
+            'c' => 'Berandai-andai bisa memperbaiki semuanya',
+            'd' => 'Menangis tanpa alasan jelas',
+            'e' => 'Tersenyum, tanda kamu sudah berdamai'
         ],
         [
             'text' => 'Apa arti "patah hati" buat kamu?',
-            'a' => 'Hal yang belum bisa aku terima.',
-            'b' => 'Rasa sakit yang bikin aku benci.',
-            'c' => 'Kesempatan buat belajar agar ngga salah lagi.',
-            'd' => 'Titik terendah dalam hidupku.',
-            'e' => 'Bagian dari perjalanan menjadi lebih kuat.'
+            'a' => 'Hal yang belum bisa aku terima',
+            'b' => 'Rasa sakit yang bikin aku benci',
+            'c' => 'Kesempatan buat belajar agar ngga salah lagi',
+            'd' => 'Titik terendah dalam hidupku',
+            'e' => 'Bagian dari perjalanan menjadi lebih kuat'
         ],
         [
             'text' => 'Kalau dikasih kesempatan bicara sekali lagi, kamu bakal bilang apa?',
             'a' => 'Aku tahu kamu masih sayang, kan?',
             'b' => 'Kenapa kamu lukai aku segini dalamnya?',
             'c' => 'Bisakah kita coba sekali lagi?',
-            'd' => 'Aku ngga tahu harus bilang apa.',
-            'e' => 'Terima kasih, semoga kamu bahagia.'
+            'd' => 'Aku ngga tahu harus bilang apa',
+            'e' => 'Terima kasih, semoga kamu bahagia'
         ],
         [
             'text' => 'Apa yang paling kamu butuhkan sekarang?',
-            'a' => 'Waktu untuk menolak kenyataan.',
-            'b' => 'Pelampiasan untuk kemarahan.',
-            'c' => 'Kesempatan untuk memperbaiki diri.',
-            'd' => 'Pelukan dan rasa aman.',
-            'e' => 'Kedamaian dan penerimaan.'
+            'a' => 'Waktu untuk menolak kenyataan',
+            'b' => 'Pelampiasan untuk kemarahan',
+            'c' => 'Kesempatan untuk memperbaiki diri',
+            'd' => 'Pelukan dan rasa aman',
+            'e' => 'Kedamaian dan penerimaan'
         ],
         [
-            'text' => 'Kalau bisa kirim pesan terakhir untuk dia, kamu akan bilang...',
+            'text' => 'Kalau bisa kirim pesan terakhir untuk dia, kamu akan bilang..',
             'a' => 'Aku tahu kamu masih sayang, kan?',
             'b' => 'Kenapa kamu tega ninggalin aku segini dalamnya?',
             'c' => 'Kalau aku berubah, kamu mau balik lagi ngga?',
-            'd' => 'Aku ngga tahu harus bilang apa, semuanya terlalu berat.',
-            'e' => 'Terima kasih, semoga kamu bahagia, aku uda ikhlas.'
+            'd' => 'Aku ngga tahu harus bilang apa, semuanya terlalu berat',
+            'e' => 'Terima kasih, semoga kamu bahagia, aku uda ikhlas'
         ],
     ];
 
