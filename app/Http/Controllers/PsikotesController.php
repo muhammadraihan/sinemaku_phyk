@@ -151,14 +151,14 @@ class PsikotesController extends Controller
 
         $data = $request->validate(
             [
-                'name'  => ['required','string','min:2','max:20'],
+                'name'  => ['required','string','min:2','max:10'],
                 'email' => ['required','email:rfc,dns','max:100'],
             ],
             // custom messages (Indonesia)
             [
                 'name.required'  => 'Nama tidak boleh kosong.',
                 'name.min'       => 'Nama minimal 2 karakter.',
-                'name.max'       => 'Nama maksimal 20 karakter.',
+                'name.max'       => 'Nama maksimal 10 karakter.',
                 'email.required' => 'Email tidak boleh kosong.',
                 'email.email'    => 'Format email tidak valid.',
                 'email.max'      => 'Email maksimal 100 karakter.',
