@@ -6,12 +6,16 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Patah Hati yang Kupilih</title>
 
+  {{-- Favicon --}}
+  <link rel="icon" type="image/png"
+        href="{{ asset('img/SINEMAKU LOGO FULL COLOR_VERTICAL.png') }}">
+
   {{-- Bootstrap 5 --}}
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
   {{-- Optional font (mirip feel serif elegan) --}}
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-
+  
   <style>
     html, body { height: 100%; }
     :root{
@@ -345,6 +349,24 @@
         transform: translate3d(0, 6px, 0);
       }
     }
+
+    /* Tweak khusus mobile */
+@media (max-width: 576px){
+  /* ... aturan lain yang kamu sudah punya ... */
+
+  /* Kecilkan hashtag di atas footer */
+  .hashtag-img{
+    width: 46vw;      /* sebelumnya min(60vw, 240px) */
+    max-width: 160px; /* batas atas biar tidak terlalu besar */
+    margin-bottom: 15px;
+  }
+
+  /* Hashtag di footer juga sedikit lebih kecil (opsional, boleh di-skip) */
+  .phyk-footer-hashtag img{
+    height: 20px;
+  }
+}
+
   </style>
 </head>
 <body>

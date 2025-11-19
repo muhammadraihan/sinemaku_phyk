@@ -5,6 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="csrf-token" content="{{ csrf_token() }}">
   <title>Hasil Tes — Patah Hati yang Kupilih</title>
+  {{-- Favicon --}}
+  <link rel="icon" type="image/png"
+        href="{{ asset('img/SINEMAKU LOGO FULL COLOR_VERTICAL.png') }}">
 
   {{-- Fonts --}}
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
